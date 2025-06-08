@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContactSchema } from "@shared/schema";
+import { insertContactSchema, insertNewsletterSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -36,6 +36,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ 
         success: false, 
         error: "Failed to retrieve contacts" 
+      });
+    }
+  });
+
+  // Newsletter subscription endpoint
+  app.post("/api/newsletter", async (req, res) => {
+    try {
+      const validatedData = insertNewsletterSchema.parse(req.body);
+      const newsletter = await storage.subscribeNewsletter(validatedData);
+      res.json({ success: true, newsletter });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ 
+          success: false, 
+          error: "Invalid email address", 
+          details: error.errors 
+        });
+      } else {
+        res.status(500).json({ 
+          success: false, 
+          error: "Failed to subscribe to newsletter" 
+        });
+      }
+    }
+  });
+
+  // Get newsletter subscribers (for admin purposes)
+  app.get("/api/newsletter/subscribers", async (req, res) => {
+    try {
+      const subscribers = await storage.getNewsletterSubscribers();
+      res.json({ success: true, subscribers });
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        error: "Failed to retrieve subscribers" 
       });
     }
   });

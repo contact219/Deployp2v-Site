@@ -1,4 +1,4 @@
-import { users, contacts, type User, type InsertUser, type Contact, type InsertContact } from "@shared/schema";
+import { users, contacts, newsletters, type User, type InsertUser, type Contact, type InsertContact, type Newsletter, type InsertNewsletter } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 
@@ -8,6 +8,8 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   createContact(contact: InsertContact): Promise<Contact>;
   getContacts(): Promise<Contact[]>;
+  subscribeNewsletter(newsletter: InsertNewsletter): Promise<Newsletter>;
+  getNewsletterSubscribers(): Promise<Newsletter[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -43,6 +45,25 @@ export class DatabaseStorage implements IStorage {
 
   async getContacts(): Promise<Contact[]> {
     return await db.select().from(contacts);
+  }
+
+  async subscribeNewsletter(insertNewsletter: InsertNewsletter): Promise<Newsletter> {
+    const [newsletter] = await db
+      .insert(newsletters)
+      .values(insertNewsletter)
+      .onConflictDoUpdate({
+        target: newsletters.email,
+        set: {
+          isActive: true,
+          subscribedAt: new Date(),
+        },
+      })
+      .returning();
+    return newsletter;
+  }
+
+  async getNewsletterSubscribers(): Promise<Newsletter[]> {
+    return await db.select().from(newsletters).where(eq(newsletters.isActive, true));
   }
 }
 
