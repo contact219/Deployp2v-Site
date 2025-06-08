@@ -560,15 +560,15 @@ export default function Home() {
                   <div className="space-y-4">
                     <div className="flex items-center">
                       <Mail className="w-6 h-6 text-indigo-400 mr-4" />
-                      <span className="text-gray-300">hello@deployp2v.com</span>
+                      <span className="text-gray-300">contact@deployp2v.com</span>
                     </div>
                     <div className="flex items-center">
                       <Phone className="w-6 h-6 text-indigo-400 mr-4" />
-                      <span className="text-gray-300">(555) 123-4567</span>
+                      <span className="text-gray-300">(214) 604-5735</span>
                     </div>
                     <div className="flex items-center">
                       <MapPin className="w-6 h-6 text-indigo-400 mr-4" />
-                      <span className="text-gray-300">San Francisco, CA</span>
+                      <span className="text-gray-300">Wylie, TX</span>
                     </div>
                   </div>
                 </div>
