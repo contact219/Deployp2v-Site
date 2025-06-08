@@ -627,6 +627,17 @@ export default function Home() {
                 <li><button onClick={() => scrollToSection('services')} className="hover:text-indigo-400 transition duration-200">Content Creation</button></li>
               </ul>
             </div>
+
+            <div>
+              <h3 className="text-white font-semibold mb-4">Resources</h3>
+              <ul className="space-y-2 text-gray-300">
+                <li><button onClick={() => setLocation('/blog')} className="hover:text-indigo-400 transition duration-200">Blog</button></li>
+                <li><button onClick={() => setLocation('/case-studies')} className="hover:text-indigo-400 transition duration-200">Case Studies</button></li>
+                <li><button onClick={() => setLocation('/faq')} className="hover:text-indigo-400 transition duration-200">FAQ</button></li>
+                <li><button onClick={() => setLocation('/resources')} className="hover:text-indigo-400 transition duration-200">Free Resources</button></li>
+                <li><button onClick={() => setLocation('/roi-calculator')} className="hover:text-indigo-400 transition duration-200">ROI Calculator</button></li>
+              </ul>
+            </div>
             
             <div>
               <h3 className="text-white font-semibold mb-4">Company</h3>
