@@ -1,0 +1,447 @@
+import React, { useState, useEffect } from 'react';
+
+// Common Tailwind CSS classes
+const commonClasses = {
+  container: 'container mx-auto px-4 sm:px-6 lg:px-8',
+  btnPrimary: 'bg-indigo-600 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300 ease-in-out transform hover:scale-105',
+  btnSecondary: 'bg-white text-indigo-600 border border-indigo-600 px-6 py-3 rounded-lg shadow-md hover:bg-indigo-50 transition duration-300 ease-in-out transform hover:scale-105',
+  sectionHeading: 'text-4xl font-bold text-center mb-12 text-white',
+  iconSvg: 'w-8 h-8 md:w-10 md:h-10 fill-current', // Adjusted for slightly larger icons
+};
+
+// SVG Icons (from Lucide React, adapted for inline SVG)
+const icons = {
+  deployp2vLogo: (
+    <svg className="w-8 h-8 text-indigo-500" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93h2c0 3.31 2.69 6 6 6v2zm5.07-3.62c-1.09 1.93-3.13 3.25-5.07 3.62V18c2.21 0 4-1.79 4-4h2c0 2.65-1.76 4.88-4.13 5.51zM12 4.07V6c3.31 0 6 2.69 6 6h2c0-4.08-3.05-7.44-7-7.93zM8.93 6.07C9.88 4.79 10.98 4 12 4V2c-1.02 0-2.12.79-3.07 2.07zM12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+    </svg>
+  ),
+  messageSquare: (
+    <svg className={commonClasses.iconSvg} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+  ),
+  lineChart: (
+    <svg className={commonClasses.iconSvg} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 3v18h18M18.7 8.3L12 15l-3.3-3.3L3 18"></path>
+    </svg>
+  ),
+  layoutGrid: (
+    <svg className={commonClasses.iconSvg} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+      <line x1="3" y1="9" x2="21" y2="9"></line>
+      <line x1="3" y1="15" x2="21" y2="15"></line>
+      <line x1="9" y1="3" x2="9" y2="21"></line>
+      <line x1="15" y1="3" x2="15" y2="21"></line>
+    </svg>
+  ),
+  edit: (
+    <svg className={commonClasses.iconSvg} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+    </svg>
+  ),
+  fileText: (
+    <svg className={commonClasses.iconSvg} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+      <polyline points="14 2 14 8 20 8"></polyline>
+      <line x1="16" y1="13" x2="8" y2="13"></line>
+      <line x1="16" y1="17" x2="8" y2="17"></line>
+    </svg>
+  ),
+  globe: (
+    <svg className={commonClasses.iconSvg} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="16" x2="12" y2="12"></line>
+      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+    </svg>
+  ),
+  users: (
+    <svg className={commonClasses.iconSvg} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+      <circle cx="9" cy="7" r="4"></circle>
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+    </svg>
+  ),
+  calendar: (
+    <svg className={commonClasses.iconSvg} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+      <line x1="16" y1="2" x2="16" y2="6"></line>
+      <line x1="8" y1="2" x2="8" y2="6"></line>
+      <line x1="3" y1="10" x2="21" y2="10"></line>
+    </svg>
+  ),
+  monitor: (
+    <svg className={commonClasses.iconSvg} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+    </svg>
+  ),
+  checkCircle: (
+    <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path></svg>
+  ),
+  xCircle: (
+    <svg className="w-5 h-5 inline-block text-gray-400 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"></path></svg>
+  )
+};
+
+
+// --- Components ---
+
+const Header = ({ scrollToSection }) => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  return (
+    <header className="bg-gray-800 shadow-md py-4 sticky top-0 z-50">
+      <div className={`${commonClasses.container} flex justify-between items-center`}>
+        <a href="#hero" onClick={() => scrollToSection('hero')} className="flex items-center space-x-2 text-2xl font-bold text-indigo-400">
+          {icons.deployp2vLogo}
+          <span>DeployP2V</span>
+        </a>
+        <nav className="hidden md:flex space-x-8">
+          <a href="#services" onClick={() => scrollToSection('services')} className="text-gray-300 hover:text-indigo-400 font-medium">Services</a>
+          <a href="#pricing" onClick={() => scrollToSection('pricing')} className="text-gray-300 hover:text-indigo-400 font-medium">Pricing</a>
+          <a href="#why-us" onClick={() => scrollToSection('why-us')} className="text-gray-300 hover:text-indigo-400 font-medium">Why DeployP2V?</a>
+          <a href="#about" onClick={() => scrollToSection('about')} className="text-gray-300 hover:text-indigo-400 font-medium">About Us</a>
+          <a href="#contact" onClick={() => scrollToSection('contact')} className="text-gray-300 hover:text-indigo-400 font-medium">Contact</a>
+        </nav>
+        <div className="md:hidden">
+          <button id="mobile-menu-button" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gray-300 hover:text-indigo-400 focus:outline-none">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <nav id="mobile-menu" className="md:hidden bg-gray-800 py-2 shadow-inner">
+          <a href="#services" onClick={() => { scrollToSection('services'); setIsMobileMenuOpen(false); }} className="block px-4 py-2 text-gray-300 hover:bg-gray-700">Services</a>
+          <a href="#pricing" onClick={() => { scrollToSection('pricing'); setIsMobileMenuOpen(false); }} className="block px-4 py-2 text-gray-300 hover:bg-gray-700">Pricing</a>
+          <a href="#why-us" onClick={() => { scrollToSection('why-us'); setIsMobileMenuOpen(false); }} className="block px-4 py-2 text-gray-300 hover:bg-gray-700">Why DeployP2V?</a>
+          <a href="#about" onClick={() => { scrollToSection('about'); setIsMobileMenuOpen(false); }} className="block px-4 py-2 text-gray-300 hover:bg-gray-700">About Us</a>
+          <a href="#contact" onClick={() => { scrollToSection('contact'); setIsMobileMenuOpen(false); }} className="block px-4 py-2 text-gray-300 hover:bg-gray-700">Contact</a>
+        </nav>
+      )}
+    </header>
+  );
+};
+
+const Hero = ({ scrollToSection }) => (
+  <section id="hero" className="gradient-bg text-white py-20 md:py-32 text-center rounded-b-3xl shadow-xl">
+    <div className={`${commonClasses.container} max-w-4xl`}>
+      <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
+        DeployP2V: Deploying Practical Vision with AI for Your Small Business
+      </h1>
+      <p className="text-xl md:text-2xl mb-10 opacity-90">
+        Unlock growth, enhance efficiency, and innovate with tailored Artificial Intelligence solutions designed specifically for small businesses.
+      </p>
+      <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
+        <button onClick={() => scrollToSection('contact')} className={commonClasses.btnPrimary}>Get a Free AI Consultation</button>
+        <button onClick={() => scrollToSection('services')} className={commonClasses.btnSecondary}>Explore Our Solutions</button>
+      </div>
+    </div>
+  </section>
+);
+
+const ServiceCard = ({ icon, title, description }) => (
+  <div className="service-card">
+    <div className="icon-container">
+      {icon}
+    </div>
+    <h3>{title}</h3>
+    <p>{description}</p>
+  </div>
+);
+
+const Services = ({ scrollToSection }) => (
+  <section id="services" className="py-16 md:py-24 bg-gray-900">
+    <div className={`${commonClasses.container}`}>
+      <h2 className={commonClasses.sectionHeading}>Our AI Solutions for Small Businesses</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <ServiceCard
+          icon={icons.messageSquare}
+          title="AI-Powered Customer Support"
+          description="Automate inquiries with intelligent chatbots & virtual assistants, providing 24/7 support and freeing your staff."
+        />
+        <ServiceCard
+          icon={icons.lineChart}
+          title="Predictive Analytics for Sales & Marketing"
+          description="Identify buying patterns, forecast sales, and personalize campaigns to boost your marketing ROI and lead generation."
+        />
+        <ServiceCard
+          icon={icons.layoutGrid}
+          title="Automated Data Entry & Reporting"
+          description="Streamline tedious data input, process invoices, and generate reports automatically, reducing errors and saving time."
+        />
+        <ServiceCard
+          icon={icons.edit}
+          title="AI-Assisted Content Creation"
+          description="Generate ideas, draft marketing copy, and create social media posts faster, scaling your content strategy easily."
+        />
+        <ServiceCard
+          icon={icons.fileText}
+          title="Automated Document Processing (OCR + AI)"
+          description="Extract information from invoices, receipts, and contracts quickly using OCR and AI, reducing manual tasks."
+        />
+        <ServiceCard
+          icon={icons.globe}
+          title="AI-Driven Market Research & Trend Analysis"
+          description="Gain insights into market trends, competitor strategies, and customer sentiment to make informed business decisions."
+        />
+        <ServiceCard
+          icon={icons.users}
+          title="AI-Enhanced Customer Portal/CRM Lite"
+          description="Develop custom web portals with AI features for lead prioritization, sentiment analysis, and smart customer follow-ups."
+        />
+        <ServiceCard
+          icon={icons.calendar}
+          title="Automated Scheduling & Booking Systems"
+          description="Optimize appointment scheduling with AI, analyzing patterns to suggest optimal times and routing inquiries efficiently."
+        />
+        <ServiceCard
+          icon={icons.monitor}
+          title="Internal Productivity & Automation Apps"
+          description="Build custom web apps for internal use to automate repetitive tasks like document categorization or internal search."
+        />
+      </div>
+    </div>
+  </section>
+);
+
+const PricingCard = ({ type, name, price, features, isFeatured = false, scrollToSection }) => (
+  <div className={`pricing-card ${isFeatured ? 'featured' : ''}`}>
+    <h3 className="text-2xl font-bold text-indigo-600 mb-4">{name}</h3>
+    <p className="text-gray-700 text-4xl font-extrabold mb-6">
+      {price}
+      {!price.includes('/') && !price.toLowerCase().includes('custom') && <span className="text-lg font-normal text-gray-500">/project</span>}
+    </p>
+    <ul className="mb-8 space-y-3 w-full">
+      {features.map((feature, index) => (
+        <li key={index} className="flex items-center text-left text-gray-700">
+          {feature.startsWith('No') ? icons.xCircle : icons.checkCircle} {/* Dynamic icon based on feature */}
+          {feature}
+        </li>
+      ))}
+    </ul>
+    <button onClick={() => scrollToSection('contact')} className={commonClasses.btnPrimary + ' w-full'}>
+      {price.toLowerCase().includes('custom') || type.toLowerCase().includes('custom') ? 'Request a Custom Quote' : 'Get Started'}
+    </button>
+  </div>
+);
+
+const Pricing = ({ scrollToSection }) => (
+  <section id="pricing" className="py-16 md:py-24 bg-gray-800">
+    <div className={`${commonClasses.container}`}>
+      <h2 className={commonClasses.sectionHeading}>Our AI Pricing Plans</h2>
+      <p className="text-center text-lg text-gray-100 mb-12 max-w-3xl mx-auto">
+        Tailored AI solutions designed to fit the unique needs and budgets of small businesses.
+      </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <PricingCard
+          type="Pilot"
+          name="AI Pilot & Discovery"
+          price="$999"
+          features={[
+            'Initial Business AI Assessment',
+            '2-Hour Expert Consultation',
+            'Basic AI Opportunity Blueprint',
+            'No Implementation Included'
+          ]}
+        />
+        <PricingCard
+          type="Growth"
+          name="AI Automation Growth"
+          price="$499/month"
+          features={[
+            '1 AI-Powered Chatbot/Automation',
+            'Managed Deployment & Hosting',
+            'Basic Reporting & Optimization',
+            'Email Support'
+          ]}
+          isFeatured={true}
+        />
+        <PricingCard
+          type="Custom"
+          name="Custom AI Solutions"
+          price="Custom Quote"
+          features={[
+            'Advanced AI & Web App Development',
+            'Dedicated Project Management',
+            'Priority Support & Training',
+            'Scalability & Performance Optimization'
+          ]}
+        />
+      </div>
+    </div>
+  </section>
+);
+
+const WhyChooseUs = ({ scrollToSection }) => (
+  <section id="why-us" className="py-16 md:py-24 bg-gray-900">
+    <div className={`${commonClasses.container}`}>
+      <h2 className={commonClasses.sectionHeading}>Why Choose DeployP2V?</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+        <div className="flex items-start bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out text-gray-800">
+          <div className="text-indigo-600 mr-4 flex-shrink-0">
+            {icons.lineChart}
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold mb-2 text-gray-900">Practical, Results-Driven Approach</h3>
+            <p className="text-gray-700">
+              We focus on delivering AI solutions that provide tangible business value and measurable ROI, not just theoretical concepts.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-start bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out text-gray-800">
+          <div className="text-indigo-600 mr-4 flex-shrink-0">
+            {icons.users}
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold mb-2 text-gray-900">Small Business Focus</h3>
+            <p className="text-gray-700">
+              We understand the unique needs and budget constraints of small businesses, providing tailored, accessible AI solutions.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-start bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out text-gray-800">
+          <div className="text-indigo-600 mr-4 flex-shrink-0">
+            {icons.monitor}
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold mb-2 text-gray-900">Experienced & Dedicated Team</h3>
+            <p className="text-gray-700">
+              Our team brings a blend of IT expertise and AI specialization to your projects, ensuring comprehensive solutions.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-start bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out text-gray-800">
+          <div className="text-indigo-600 mr-4 flex-shrink-0">
+            {icons.globe}
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold mb-2 text-gray-900">Ethical & Responsible AI</h3>
+            <p className="text-gray-700">
+              We prioritize ethical considerations, data privacy, and responsible development in all our AI solutions.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+const AboutUs = ({ scrollToSection }) => (
+  <section id="about" className="py-16 md:py-24 bg-gray-800">
+    <div className={`${commonClasses.container} max-w-4xl text-center`}>
+      <h2 className={commonClasses.sectionHeading}>About DeployP2V</h2>
+      <p className="about-text mb-6">
+        For years, DeployP2V has been a trusted name in Managed IT services, helping businesses optimize their infrastructure. Recognizing the transformative power of Artificial Intelligence, we've strategically pivoted our focus to become a dedicated leader in AI solutions.
+      </p>
+      <p className="about-text">
+        Our deep understanding of technology infrastructure, combined with our growing team of AI specialists, positions us uniquely to help businesses like yours seamlessly integrate and deploy intelligent systems. We are committed to empowering your future with practical, impactful AI.
+      </p>
+    </div>
+  </section>
+);
+
+const Contact = () => {
+  const [formMessage, setFormMessage] = useState('');
+  const [messageType, setMessageType] = useState(''); // 'success' or 'error'
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // In a real application, you would send this data to a backend server.
+    // For this example, we'll just simulate a success message.
+    const name = e.target.name.value;
+    const email = e.target.email.value;
+    const message = e.target.message.value;
+
+    console.log('Form Submitted:', { name, email, message });
+
+    setFormMessage(`Thank you for your message, ${name}! We will get back to you soon.`);
+    setMessageType('success');
+    e.target.reset(); // Clear the form
+
+    // Hide message after a few seconds
+    setTimeout(() => {
+      setFormMessage('');
+      setMessageType('');
+    }, 5000);
+  };
+
+  return (
+    <section id="contact" className="py-16 md:py-24 bg-gray-900">
+      <div className={`${commonClasses.container} max-w-2xl`}>
+        <h2 className={commonClasses.sectionHeading}>Get in Touch</h2>
+        <p className="text-center text-lg text-gray-100 mb-8">
+          Ready to explore how AI can transform your business? Contact us for a free consultation.
+        </p>
+        <form onSubmit={handleSubmit} className="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700">
+          <div className="mb-6">
+            <label htmlFor="name" className="block text-gray-100 text-sm font-bold mb-2">Name:</label>
+            <input type="text" id="name" name="name" className="shadow appearance-none border border-gray-600 rounded-lg w-full py-3 px-4 bg-gray-700 text-white leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+          </div>
+          <div className="mb-6">
+            <label htmlFor="email" className="block text-gray-100 text-sm font-bold mb-2">Email:</label>
+            <input type="email" id="email" name="email" className="shadow appearance-none border border-gray-600 rounded-lg w-full py-3 px-4 bg-gray-700 text-white leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+          </div>
+          <div className="mb-6">
+            <label htmlFor="message" className="block text-gray-100 text-sm font-bold mb-2">Message:</label>
+            <textarea id="message" name="message" rows="6" className="shadow appearance-none border border-gray-600 rounded-lg w-full py-3 px-4 bg-gray-700 text-white leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" required></textarea>
+          </div>
+          <div className="flex items-center justify-center">
+            <button type="submit" className={commonClasses.btnPrimary}>Send Message</button>
+          </div>
+          {formMessage && (
+            <div className={`mt-4 admin-message ${messageType === 'success' ? 'bg-green-800 text-green-100' : 'bg-red-800 text-red-100'}`}>
+              {formMessage}
+            </div>
+          )}
+        </form>
+      </div>
+    </section>
+  );
+};
+
+const Footer = () => (
+  <footer className="bg-gray-950 text-white py-8 text-center rounded-t-3xl shadow-inner">
+    <div className={`${commonClasses.container}`}>
+      <p>&copy; 2025 DeployP2V. All rights reserved.</p>
+      <p className="mt-2 text-sm">Deploying Practical Vision with AI</p>
+      <div className="flex justify-center space-x-4 mt-4">
+        <a href="#" className="text-gray-400 hover:text-white">Privacy Policy</a>
+        <span className="text-gray-400">|</span>
+        <a href="#" className="text-gray-400 hover:text-white">Terms of Service</a>
+      </div>
+    </div>
+  </footer>
+);
+
+// --- Main App Component ---
+const App = () => {
+  // Function to handle smooth scrolling
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  // The main layout of the application
+  return (
+    <div className="App">
+      <Header scrollToSection={scrollToSection} />
+      <Hero scrollToSection={scrollToSection} />
+      <Services scrollToSection={scrollToSection} />
+      <Pricing scrollToSection={scrollToSection} />
+      <WhyChooseUs scrollToSection={scrollToSection} />
+      <AboutUs scrollToSection={scrollToSection} />
+      <Contact />
+      <Footer />
+    </div>
+  );
+};
+
+export default App; // Export the main App component
