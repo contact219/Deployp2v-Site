@@ -10,6 +10,7 @@ import Admin from "@/pages/admin";
 import FAQ from "@/pages/faq";
 import CaseStudies from "@/pages/case-studies";
 import Blog from "@/pages/blog";
+import BlogPost from "@/pages/blog-post";
 import ROICalculator from "@/pages/roi-calculator";
 import Resources from "@/pages/resources";
 import NotFound from "@/pages/not-found";
@@ -22,6 +23,7 @@ function Router() {
       <Route path="/faq" component={FAQ} />
       <Route path="/case-studies" component={CaseStudies} />
       <Route path="/blog" component={Blog} />
+      <Route path="/blog/:id" component={BlogPost} />
       <Route path="/roi-calculator" component={ROICalculator} />
       <Route path="/resources" component={Resources} />
       <Route path="/privacy-policy" component={PrivacyPolicy} />
