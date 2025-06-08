@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { useLocation } from 'wouter';
 import { 
   MessageSquare, 
   BarChart3, 
@@ -110,6 +111,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
 );
 
 export default function Home() {
+  const [, setLocation] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -632,6 +634,8 @@ export default function Home() {
                 <li><button onClick={() => scrollToSection('about')} className="hover:text-indigo-400 transition duration-200">About Us</button></li>
                 <li><button onClick={() => scrollToSection('pricing')} className="hover:text-indigo-400 transition duration-200">Pricing</button></li>
                 <li><button onClick={() => scrollToSection('contact')} className="hover:text-indigo-400 transition duration-200">Contact</button></li>
+                <li><button onClick={() => setLocation('/privacy-policy')} className="hover:text-indigo-400 transition duration-200">Privacy Policy</button></li>
+                <li><button onClick={() => setLocation('/terms-of-service')} className="hover:text-indigo-400 transition duration-200">Terms of Service</button></li>
               </ul>
             </div>
           </div>
