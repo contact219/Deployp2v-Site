@@ -367,31 +367,31 @@ export default function Resources() {
     switch (resource.id) {
       case 1:
         content = generateAIImplementationGuide();
-        filename = 'AI-Implementation-Guide-for-Small-Business.pdf';
+        filename = 'AI-Implementation-Guide-for-Small-Business.txt';
         break;
       case 2:
         content = generateROIWorksheet();
-        filename = 'ROI-Calculation-Worksheet.xlsx';
+        filename = 'ROI-Calculation-Worksheet.txt';
         break;
       case 3:
         content = generateReadinessChecklist();
-        filename = 'AI-Readiness-Assessment-Checklist.pdf';
+        filename = 'AI-Readiness-Assessment-Checklist.txt';
         break;
       case 4:
         content = generateIndustryUseCases();
-        filename = 'Industry-Specific-AI-Use-Cases.pdf';
+        filename = 'Industry-Specific-AI-Use-Cases.txt';
         break;
       case 5:
         content = generateVendorTemplate();
-        filename = 'AI-Vendor-Evaluation-Template.xlsx';
+        filename = 'AI-Vendor-Evaluation-Template.txt';
         break;
       case 6:
         content = generateChangeManagementGuide();
-        filename = 'Change-Management-for-AI-Implementation.pdf';
+        filename = 'Change-Management-for-AI-Implementation.txt';
         break;
       default:
         content = generateGenericGuide(resource);
-        filename = `${resource.title.replace(/[^a-zA-Z0-9]/g, '-')}.pdf`;
+        filename = `${resource.title.replace(/[^a-zA-Z0-9]/g, '-')}.txt`;
     }
 
     // Create and trigger download
