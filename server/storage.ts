@@ -48,6 +48,11 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(contacts);
   }
 
+  async deleteContact(id: number): Promise<boolean> {
+    const result = await db.delete(contacts).where(eq(contacts.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
   async subscribeNewsletter(insertNewsletter: InsertNewsletter): Promise<Newsletter> {
     const [newsletter] = await db
       .insert(newsletters)
