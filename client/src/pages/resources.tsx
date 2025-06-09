@@ -602,11 +602,11 @@ export default function Resources() {
                 </p>
               </div>
               
-              {selectedTool.content.sections.map((section, sectionIndex) => (
+              {(selectedTool.content as any).sections.map((section: any, sectionIndex: number) => (
                 <div key={sectionIndex} className="bg-gray-700 p-6 rounded-lg">
                   <h3 className="text-xl font-semibold text-white mb-4">{section.title}</h3>
                   <div className="space-y-4">
-                    {section.questions.map((question, questionIndex) => (
+                    {section.questions.map((question: string, questionIndex: number) => (
                       <div key={questionIndex} className="space-y-2">
                         <label className="text-gray-300 font-medium">{question}</label>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
@@ -665,7 +665,7 @@ export default function Resources() {
                     </tr>
                   </thead>
                   <tbody>
-                    {selectedTool.content.technologies.map((tech, index) => (
+                    {(selectedTool.content as any).technologies.map((tech: any, index: number) => (
                       <tr key={index} className="border-b border-gray-700 hover:bg-gray-700">
                         <td className="py-4 px-4">
                           <div className="text-white font-medium">{tech.name}</div>
@@ -705,7 +705,7 @@ export default function Resources() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
-                {selectedTool.content && 'technologies' in selectedTool.content && selectedTool.content.technologies.map((tech, index) => (
+                {(selectedTool.content as any).technologies.map((tech: any, index: number) => (
                   <Card key={index} className="bg-gray-700 border-gray-600">
                     <CardHeader>
                       <CardTitle className="text-white text-lg">{tech.name}</CardTitle>
