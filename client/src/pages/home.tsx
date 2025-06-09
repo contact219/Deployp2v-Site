@@ -39,12 +39,12 @@ const DeployP2VLogo = () => (
   </svg>
 );
 
-// Common classes
+// Common classes - optimized for mobile
 const commonClasses = {
   container: 'container mx-auto px-4 sm:px-6 lg:px-8',
-  btnPrimary: 'bg-indigo-600 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300 ease-in-out transform hover:scale-105',
-  btnSecondary: 'bg-white text-indigo-600 border border-indigo-600 px-6 py-3 rounded-lg shadow-md hover:bg-indigo-50 transition duration-300 ease-in-out transform hover:scale-105',
-  sectionHeading: 'text-4xl font-bold text-center mb-12 text-white',
+  btnPrimary: 'bg-indigo-600 text-white px-4 py-3 sm:px-6 rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300 ease-in-out touch-manipulation',
+  btnSecondary: 'bg-white text-indigo-600 border border-indigo-600 px-4 py-3 sm:px-6 rounded-lg shadow-md hover:bg-indigo-50 transition duration-300 ease-in-out touch-manipulation',
+  sectionHeading: 'text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-8 sm:mb-12 text-white',
 };
 
 interface ServiceCardProps {
@@ -54,14 +54,14 @@ interface ServiceCardProps {
 }
 
 const ServiceCard: React.FC<ServiceCardProps> = ({ icon, title, description }) => (
-  <div className="service-card p-8 rounded-xl text-center">
-    <div className="flex justify-center mb-6">
-      <div className="w-12 h-12 text-indigo-400">
+  <div className="service-card p-6 sm:p-8 rounded-xl text-center">
+    <div className="flex justify-center mb-4 sm:mb-6">
+      <div className="w-10 h-10 sm:w-12 sm:h-12 text-indigo-400">
         {icon}
       </div>
     </div>
-    <h3 className="text-xl font-semibold mb-4 text-white">{title}</h3>
-    <p className="text-gray-300">{description}</p>
+    <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">{title}</h3>
+    <p className="text-sm sm:text-base text-gray-300">{description}</p>
   </div>
 );
 
@@ -82,28 +82,28 @@ const PricingCard: React.FC<PricingCardProps> = ({
   isFeatured = false, 
   onContactClick 
 }) => (
-  <div className={`pricing-card bg-gray-700 p-8 rounded-xl border border-gray-600 ${isFeatured ? 'relative border-indigo-500' : ''}`}>
+  <div className={`pricing-card bg-gray-700 p-6 sm:p-8 rounded-xl border border-gray-600 ${isFeatured ? 'relative border-indigo-500' : ''}`}>
     {isFeatured && (
       <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-        <span className="bg-indigo-600 text-white px-4 py-1 rounded-full text-sm font-semibold">Most Popular</span>
+        <span className="bg-indigo-600 text-white px-3 py-1 sm:px-4 rounded-full text-xs sm:text-sm font-semibold">Most Popular</span>
       </div>
     )}
-    <div className="text-center mb-8">
-      <h3 className="text-2xl font-bold text-white mb-2">{name}</h3>
-      <div className="text-4xl font-bold text-indigo-400 mb-2">{price}</div>
-      <p className="text-gray-300">{type}</p>
+    <div className="text-center mb-6 sm:mb-8">
+      <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">{name}</h3>
+      <div className="text-3xl sm:text-4xl font-bold text-indigo-400 mb-2">{price}</div>
+      <p className="text-sm sm:text-base text-gray-300">{type}</p>
     </div>
-    <ul className="space-y-4 mb-8">
+    <ul className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
       {features.map((feature, index) => (
-        <li key={index} className="flex items-center text-gray-300">
-          <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-          {feature}
+        <li key={index} className="flex items-start text-gray-300 text-sm sm:text-base">
+          <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 mt-0.5 flex-shrink-0" />
+          <span>{feature}</span>
         </li>
       ))}
     </ul>
     <Button 
       onClick={onContactClick} 
-      className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition duration-300 font-semibold"
+      className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition duration-300 font-semibold touch-manipulation"
     >
       {name === 'Enterprise' ? 'Contact Sales' : name === 'Professional' ? 'Choose Professional' : 'Get Started'}
     </Button>
@@ -240,19 +240,19 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section id="hero" className="gradient-bg text-white py-20 md:py-32 text-center rounded-b-3xl shadow-xl">
+      <section id="hero" className="gradient-bg text-white py-16 sm:py-20 md:py-32 text-center rounded-b-3xl shadow-xl">
         <div className={`${commonClasses.container} max-w-4xl`}>
-          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold leading-tight mb-4 sm:mb-6 px-2">
             DeployP2V: Deploying Practical Vision with AI for Your Small Business
           </h1>
-          <p className="text-xl md:text-2xl mb-10 opacity-90">
+          <p className="text-lg sm:text-xl md:text-2xl mb-8 sm:mb-10 opacity-90 px-4">
             Unlock growth, enhance efficiency, and innovate with tailored Artificial Intelligence solutions designed specifically for small businesses.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
-            <Button onClick={() => scrollToSection('contact')} className={commonClasses.btnPrimary}>
+          <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 px-4">
+            <Button onClick={() => scrollToSection('contact')} className={`${commonClasses.btnPrimary} w-full sm:w-auto text-center`}>
               Get a Free AI Consultation
             </Button>
-            <Button onClick={() => scrollToSection('services')} className={commonClasses.btnSecondary}>
+            <Button onClick={() => scrollToSection('services')} className={`${commonClasses.btnSecondary} w-full sm:w-auto text-center`}>
               Explore Our Solutions
             </Button>
           </div>
@@ -468,12 +468,12 @@ export default function Home() {
               <p className="text-xl text-gray-300">Let's discuss how AI can solve your specific business challenges. Get a free consultation today.</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
               {/* Contact Form */}
               <Card className="bg-gray-800 border-gray-700">
-                <CardContent className="p-8">
-                  <h3 className="text-2xl font-semibold mb-6 text-white">Get Your Free AI Consultation</h3>
-                  <form onSubmit={handleFormSubmit} className="space-y-6">
+                <CardContent className="p-6 sm:p-8">
+                  <h3 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-white">Get Your Free AI Consultation</h3>
+                  <form onSubmit={handleFormSubmit} className="space-y-4 sm:space-y-6">
                     <div>
                       <Label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">Full Name *</Label>
                       <Input 
@@ -483,7 +483,7 @@ export default function Home() {
                         required 
                         value={formData.name}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                        className="w-full px-3 py-3 sm:px-4 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-base touch-manipulation" 
                         placeholder="Your full name"
                       />
                     </div>
@@ -497,7 +497,7 @@ export default function Home() {
                         required 
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                        className="w-full px-3 py-3 sm:px-4 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-base touch-manipulation" 
                         placeholder="your@email.com"
                       />
                     </div>
@@ -510,7 +510,7 @@ export default function Home() {
                         name="company" 
                         value={formData.company}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                        className="w-full px-3 py-3 sm:px-4 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-base touch-manipulation" 
                         placeholder="Your company name"
                       />
                     </div>
@@ -523,7 +523,7 @@ export default function Home() {
                         name="phone" 
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                        className="w-full px-3 py-3 sm:px-4 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-base touch-manipulation" 
                         placeholder="(555) 123-4567"
                       />
                     </div>
@@ -537,7 +537,7 @@ export default function Home() {
                         required
                         value={formData.message}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                        className="w-full px-3 py-3 sm:px-4 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-base touch-manipulation resize-none" 
                         placeholder="Describe your current challenges and how you think AI might help..."
                       />
                     </div>
@@ -545,7 +545,7 @@ export default function Home() {
                     <Button 
                       type="submit" 
                       disabled={contactMutation.isPending}
-                      className="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg hover:bg-indigo-700 transition duration-300 font-semibold"
+                      className="w-full bg-indigo-600 text-white py-3 px-4 sm:px-6 rounded-lg hover:bg-indigo-700 transition duration-300 font-semibold text-base touch-manipulation"
                     >
                       {contactMutation.isPending ? 'Submitting...' : 'Schedule Free Consultation'}
                     </Button>
