@@ -158,21 +158,142 @@ const tools = [
     title: "AI Cost Calculator",
     description: "Interactive tool to estimate AI implementation costs for your business size.",
     type: "Web Tool",
-    url: "/roi-calculator"
+    url: "/roi-calculator",
+    isExternal: true
   },
   {
     id: 2,
     title: "Business Process Audit Template",
     description: "Identify which processes in your business could benefit from AI automation.",
     type: "Interactive Form",
-    url: "#"
+    url: "#",
+    isExternal: false,
+    content: {
+      sections: [
+        {
+          title: "Administrative Processes",
+          questions: [
+            "How many hours per week do you spend on data entry?",
+            "Do you manually process invoices or receipts?",
+            "How much time is spent on scheduling and calendar management?",
+            "Are customer inquiries handled manually?",
+            "Do you create reports by manually compiling data?"
+          ]
+        },
+        {
+          title: "Customer Service",
+          questions: [
+            "What percentage of customer inquiries are repetitive?",
+            "How quickly do you respond to customer emails?",
+            "Do you have a knowledge base for common questions?",
+            "Are customers waiting for responses during off-hours?",
+            "How do you track customer satisfaction?"
+          ]
+        },
+        {
+          title: "Sales & Marketing",
+          questions: [
+            "How do you currently qualify leads?",
+            "Do you personalize marketing communications?",
+            "How do you track customer behavior on your website?",
+            "Are you analyzing social media engagement?",
+            "How do you determine optimal pricing?"
+          ]
+        },
+        {
+          title: "Operations",
+          questions: [
+            "Do you forecast demand for inventory?",
+            "How do you schedule staff and resources?",
+            "Are you monitoring equipment performance?",
+            "Do you track and analyze operational costs?",
+            "How do you identify process bottlenecks?"
+          ]
+        }
+      ]
+    }
   },
   {
     id: 3,
     title: "AI Technology Comparison Chart",
     description: "Compare different AI technologies and their suitability for various business needs.",
     type: "Interactive Chart",
-    url: "#"
+    url: "#",
+    isExternal: false,
+    content: {
+      technologies: [
+        {
+          name: "Chatbots & Virtual Assistants",
+          bestFor: ["Customer Service", "Lead Qualification", "FAQ Handling"],
+          complexity: "Low",
+          cost: "$100-500/month",
+          implementationTime: "1-2 weeks",
+          businessSizes: ["Small", "Medium", "Large"],
+          useCases: [
+            "24/7 customer support",
+            "Lead capture and qualification",
+            "Appointment scheduling",
+            "Order status inquiries"
+          ]
+        },
+        {
+          name: "Predictive Analytics",
+          bestFor: ["Inventory Management", "Sales Forecasting", "Demand Planning"],
+          complexity: "Medium",
+          cost: "$500-2000/month",
+          implementationTime: "4-8 weeks",
+          businessSizes: ["Medium", "Large"],
+          useCases: [
+            "Sales forecasting",
+            "Inventory optimization",
+            "Customer behavior prediction",
+            "Risk assessment"
+          ]
+        },
+        {
+          name: "Process Automation (RPA)",
+          bestFor: ["Data Entry", "Report Generation", "Invoice Processing"],
+          complexity: "Low-Medium",
+          cost: "$300-1000/month",
+          implementationTime: "2-4 weeks",
+          businessSizes: ["Small", "Medium", "Large"],
+          useCases: [
+            "Automated data entry",
+            "Invoice processing",
+            "Report generation",
+            "Email automation"
+          ]
+        },
+        {
+          name: "Computer Vision",
+          bestFor: ["Quality Control", "Security", "Inventory Tracking"],
+          complexity: "High",
+          cost: "$1000-5000/month",
+          implementationTime: "8-16 weeks",
+          businessSizes: ["Medium", "Large"],
+          useCases: [
+            "Quality inspection",
+            "Security monitoring",
+            "Inventory counting",
+            "Document scanning"
+          ]
+        },
+        {
+          name: "Natural Language Processing",
+          bestFor: ["Document Analysis", "Sentiment Analysis", "Content Generation"],
+          complexity: "Medium-High",
+          cost: "$500-3000/month",
+          implementationTime: "6-12 weeks",
+          businessSizes: ["Medium", "Large"],
+          useCases: [
+            "Document classification",
+            "Email sentiment analysis",
+            "Content generation",
+            "Language translation"
+          ]
+        }
+      ]
+    }
   }
 ];
 
@@ -220,6 +341,8 @@ export default function Resources() {
   const [, setLocation] = useLocation();
   const [selectedWebinar, setSelectedWebinar] = useState<Webinar | null>(null);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [selectedTool, setSelectedTool] = useState<typeof tools[0] | null>(null);
+  const [isToolModalOpen, setIsToolModalOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -336,7 +459,14 @@ export default function Resources() {
                       {tool.type}
                     </div>
                     <Button 
-                      onClick={() => setLocation(tool.url)}
+                      onClick={() => {
+                        if (tool.isExternal) {
+                          setLocation(tool.url);
+                        } else {
+                          setSelectedTool(tool);
+                          setIsToolModalOpen(true);
+                        }
+                      }}
                       variant="outline"
                       size="sm"
                       className="text-indigo-400 border-indigo-400 hover:bg-indigo-400 hover:text-white"
@@ -439,6 +569,170 @@ export default function Resources() {
                   className="bg-indigo-600 hover:bg-indigo-700 text-white"
                 >
                   Schedule Free Consultation
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Tool Modal */}
+      <Dialog open={isToolModalOpen} onOpenChange={setIsToolModalOpen}>
+        <DialogContent className="max-w-5xl w-full bg-gray-800 border-gray-700 max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-white text-xl mb-4">
+              {selectedTool?.title}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedTool && selectedTool.id === 2 && (
+            <div className="space-y-6">
+              <div className="text-center mb-6">
+                <p className="text-gray-300 text-lg">
+                  Complete this audit to identify AI automation opportunities in your business
+                </p>
+              </div>
+              
+              {selectedTool.content.sections.map((section, sectionIndex) => (
+                <div key={sectionIndex} className="bg-gray-700 p-6 rounded-lg">
+                  <h3 className="text-xl font-semibold text-white mb-4">{section.title}</h3>
+                  <div className="space-y-4">
+                    {section.questions.map((question, questionIndex) => (
+                      <div key={questionIndex} className="space-y-2">
+                        <label className="text-gray-300 font-medium">{question}</label>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                          <Button variant="outline" size="sm" className="justify-start text-green-400 border-green-400 hover:bg-green-400 hover:text-white">
+                            High Priority
+                          </Button>
+                          <Button variant="outline" size="sm" className="justify-start text-yellow-400 border-yellow-400 hover:bg-yellow-400 hover:text-white">
+                            Medium Priority
+                          </Button>
+                          <Button variant="outline" size="sm" className="justify-start text-gray-400 border-gray-400 hover:bg-gray-400 hover:text-white">
+                            Low Priority
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              
+              <div className="bg-gray-700 p-6 rounded-lg text-center">
+                <h3 className="text-xl font-semibold text-white mb-3">Get Your Personalized AI Strategy</h3>
+                <p className="text-gray-300 mb-4">
+                  Based on your audit responses, our AI experts can create a customized implementation roadmap for your business.
+                </p>
+                <Button 
+                  onClick={() => {
+                    setIsToolModalOpen(false);
+                    setLocation('/');
+                  }}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                >
+                  Schedule Strategy Session
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {selectedTool && selectedTool.id === 3 && (
+            <div className="space-y-6">
+              <div className="text-center mb-6">
+                <p className="text-gray-300 text-lg">
+                  Compare AI technologies to find the best fit for your business needs
+                </p>
+              </div>
+              
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-600">
+                      <th className="text-left py-3 px-4 text-white font-semibold">Technology</th>
+                      <th className="text-left py-3 px-4 text-white font-semibold">Best For</th>
+                      <th className="text-left py-3 px-4 text-white font-semibold">Complexity</th>
+                      <th className="text-left py-3 px-4 text-white font-semibold">Monthly Cost</th>
+                      <th className="text-left py-3 px-4 text-white font-semibold">Implementation</th>
+                      <th className="text-left py-3 px-4 text-white font-semibold">Business Size</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedTool.content.technologies.map((tech, index) => (
+                      <tr key={index} className="border-b border-gray-700 hover:bg-gray-700">
+                        <td className="py-4 px-4">
+                          <div className="text-white font-medium">{tech.name}</div>
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="space-y-1">
+                            {tech.bestFor.map((item, i) => (
+                              <Badge key={i} variant="secondary" className="mr-1 mb-1 text-xs">
+                                {item}
+                              </Badge>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="py-4 px-4">
+                          <Badge 
+                            variant={tech.complexity === 'Low' ? 'default' : tech.complexity === 'Medium' ? 'secondary' : 'destructive'}
+                            className="text-xs"
+                          >
+                            {tech.complexity}
+                          </Badge>
+                        </td>
+                        <td className="py-4 px-4 text-gray-300">{tech.cost}</td>
+                        <td className="py-4 px-4 text-gray-300">{tech.implementationTime}</td>
+                        <td className="py-4 px-4">
+                          <div className="space-y-1">
+                            {tech.businessSizes.map((size, i) => (
+                              <Badge key={i} variant="outline" className="mr-1 mb-1 text-xs">
+                                {size}
+                              </Badge>
+                            ))}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
+                {selectedTool.content.technologies.map((tech, index) => (
+                  <Card key={index} className="bg-gray-700 border-gray-600">
+                    <CardHeader>
+                      <CardTitle className="text-white text-lg">{tech.name}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div>
+                          <h4 className="text-sm font-semibold text-gray-300 mb-2">Common Use Cases:</h4>
+                          <ul className="space-y-1">
+                            {tech.useCases.map((useCase, i) => (
+                              <li key={i} className="text-gray-400 text-sm flex items-start">
+                                <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full mt-2 mr-2 flex-shrink-0"></span>
+                                {useCase}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              
+              <div className="bg-gray-700 p-6 rounded-lg text-center">
+                <h3 className="text-xl font-semibold text-white mb-3">Ready to Choose the Right AI Solution?</h3>
+                <p className="text-gray-300 mb-4">
+                  Let our experts help you select and implement the perfect AI technology for your specific business needs.
+                </p>
+                <Button 
+                  onClick={() => {
+                    setIsToolModalOpen(false);
+                    setLocation('/');
+                  }}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                >
+                  Get Expert Consultation
                 </Button>
               </div>
             </div>
