@@ -202,26 +202,26 @@ export default function Home() {
   return (
     <div className="font-sans bg-gray-900 text-white">
       {/* Header */}
-      <header className="bg-gray-800 shadow-md py-4 sticky top-0 z-50 transition-all duration-300">
+      <header className="bg-gray-800 shadow-md py-3 sm:py-4 sticky top-0 z-50 transition-all duration-300">
         <div className={`${commonClasses.container} flex justify-between items-center`}>
           <button 
             onClick={() => scrollToSection('hero')} 
-            className="flex items-center space-x-2 text-2xl font-bold text-indigo-400"
+            className="flex items-center space-x-2 text-xl sm:text-2xl font-bold text-indigo-400 touch-manipulation"
           >
             <DeployP2VLogo />
-            <span>DeployP2V</span>
+            <span className="hidden xs:inline">DeployP2V</span>
           </button>
-          <nav className="hidden md:flex space-x-8">
-            <button onClick={() => scrollToSection('services')} className="text-gray-300 hover:text-indigo-400 font-medium transition duration-200">Services</button>
-            <button onClick={() => scrollToSection('pricing')} className="text-gray-300 hover:text-indigo-400 font-medium transition duration-200">Pricing</button>
-            <button onClick={() => scrollToSection('why-us')} className="text-gray-300 hover:text-indigo-400 font-medium transition duration-200">Why DeployP2V?</button>
-            <button onClick={() => scrollToSection('about')} className="text-gray-300 hover:text-indigo-400 font-medium transition duration-200">About Us</button>
-            <button onClick={() => scrollToSection('contact')} className="text-gray-300 hover:text-indigo-400 font-medium transition duration-200">Contact</button>
+          <nav className="hidden md:flex space-x-6 lg:space-x-8">
+            <button onClick={() => scrollToSection('services')} className="text-gray-300 hover:text-indigo-400 font-medium transition duration-200 touch-manipulation">Services</button>
+            <button onClick={() => scrollToSection('pricing')} className="text-gray-300 hover:text-indigo-400 font-medium transition duration-200 touch-manipulation">Pricing</button>
+            <button onClick={() => scrollToSection('why-us')} className="text-gray-300 hover:text-indigo-400 font-medium transition duration-200 touch-manipulation">Why Us?</button>
+            <button onClick={() => scrollToSection('about')} className="text-gray-300 hover:text-indigo-400 font-medium transition duration-200 touch-manipulation">About</button>
+            <button onClick={() => scrollToSection('contact')} className="text-gray-300 hover:text-indigo-400 font-medium transition duration-200 touch-manipulation">Contact</button>
           </nav>
           <div className="md:hidden">
             <button 
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
-              className="text-gray-300 hover:text-indigo-400 focus:outline-none"
+              className="text-gray-300 hover:text-indigo-400 focus:outline-none touch-manipulation p-2"
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -229,30 +229,36 @@ export default function Home() {
         </div>
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <nav className="md:hidden bg-gray-800 py-2 shadow-inner">
-            <button onClick={() => scrollToSection('services')} className="block w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700 transition duration-200">Services</button>
-            <button onClick={() => scrollToSection('pricing')} className="block w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700 transition duration-200">Pricing</button>
-            <button onClick={() => scrollToSection('why-us')} className="block w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700 transition duration-200">Why DeployP2V?</button>
-            <button onClick={() => scrollToSection('about')} className="block w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700 transition duration-200">About Us</button>
-            <button onClick={() => scrollToSection('contact')} className="block w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700 transition duration-200">Contact</button>
+          <nav className="md:hidden bg-gray-800 py-2 shadow-inner border-t border-gray-700">
+            <button onClick={() => { scrollToSection('services'); setIsMobileMenuOpen(false); }} className="block w-full text-left px-6 py-3 text-gray-300 hover:bg-gray-700 transition duration-200 touch-manipulation">Services</button>
+            <button onClick={() => { scrollToSection('pricing'); setIsMobileMenuOpen(false); }} className="block w-full text-left px-6 py-3 text-gray-300 hover:bg-gray-700 transition duration-200 touch-manipulation">Pricing</button>
+            <button onClick={() => { scrollToSection('why-us'); setIsMobileMenuOpen(false); }} className="block w-full text-left px-6 py-3 text-gray-300 hover:bg-gray-700 transition duration-200 touch-manipulation">Why Us?</button>
+            <button onClick={() => { scrollToSection('about'); setIsMobileMenuOpen(false); }} className="block w-full text-left px-6 py-3 text-gray-300 hover:bg-gray-700 transition duration-200 touch-manipulation">About</button>
+            <button onClick={() => { scrollToSection('contact'); setIsMobileMenuOpen(false); }} className="block w-full text-left px-6 py-3 text-gray-300 hover:bg-gray-700 transition duration-200 touch-manipulation">Contact</button>
           </nav>
         )}
       </header>
 
       {/* Hero Section */}
-      <section id="hero" className="gradient-bg text-white py-16 sm:py-20 md:py-32 text-center rounded-b-3xl shadow-xl">
+      <section id="hero" className="gradient-bg text-white py-12 sm:py-16 md:py-24 lg:py-32 text-center rounded-b-3xl shadow-xl">
         <div className={`${commonClasses.container} max-w-4xl`}>
-          <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold leading-tight mb-4 sm:mb-6 px-2">
+          <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-4 sm:mb-6 px-2">
             DeployP2V: Deploying Practical Vision with AI for Your Small Business
           </h1>
-          <p className="text-lg sm:text-xl md:text-2xl mb-8 sm:mb-10 opacity-90 px-4">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 md:mb-10 opacity-90 px-4 leading-relaxed">
             Unlock growth, enhance efficiency, and innovate with tailored Artificial Intelligence solutions designed specifically for small businesses.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 px-4">
-            <Button onClick={() => scrollToSection('contact')} className={`${commonClasses.btnPrimary} w-full sm:w-auto text-center`}>
+          <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 px-4 max-w-lg sm:max-w-none mx-auto">
+            <Button 
+              onClick={() => scrollToSection('contact')} 
+              className={`${commonClasses.btnPrimary} w-full sm:w-auto text-center py-3 px-6 text-base font-semibold touch-manipulation`}
+            >
               Get a Free AI Consultation
             </Button>
-            <Button onClick={() => scrollToSection('services')} className={`${commonClasses.btnSecondary} w-full sm:w-auto text-center`}>
+            <Button 
+              onClick={() => scrollToSection('services')} 
+              className={`${commonClasses.btnSecondary} w-full sm:w-auto text-center py-3 px-6 text-base font-semibold touch-manipulation`}
+            >
               Explore Our Solutions
             </Button>
           </div>
@@ -260,10 +266,10 @@ export default function Home() {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-16 md:py-24 bg-gray-900">
+      <section id="services" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gray-900">
         <div className={commonClasses.container}>
-          <h2 className={commonClasses.sectionHeading}>Our AI Solutions for Small Businesses</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <h2 className={`${commonClasses.sectionHeading} text-center mb-8 sm:mb-12 md:mb-16`}>Our AI Solutions for Small Businesses</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             <ServiceCard
               icon={<MessageSquare className="w-full h-full" />}
               title="AI-Powered Customer Support"
@@ -314,11 +320,11 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-16 md:py-24 bg-gray-800">
+      <section id="pricing" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gray-800">
         <div className={commonClasses.container}>
-          <h2 className="text-4xl font-bold text-center mb-4 text-white">Simple, Transparent Pricing</h2>
-          <p className="text-xl text-center mb-12 text-gray-300">Choose the plan that fits your business needs</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-3 sm:mb-4 text-white">Simple, Transparent Pricing</h2>
+          <p className="text-base sm:text-lg md:text-xl text-center mb-8 sm:mb-10 md:mb-12 text-gray-300 px-4">Choose the plan that fits your business needs</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
             <PricingCard
               type="Perfect for small businesses getting started with AI"
               name="Starter"
@@ -363,18 +369,18 @@ export default function Home() {
       </section>
 
       {/* Why Us Section */}
-      <section id="why-us" className="py-16 md:py-24 bg-gray-900">
+      <section id="why-us" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gray-900">
         <div className={commonClasses.container}>
-          <h2 className="text-4xl font-bold text-center mb-4 text-white">Why Choose DeployP2V?</h2>
-          <p className="text-xl text-center mb-16 text-gray-300">We understand small business challenges and deliver practical AI solutions that work</p>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-3 sm:mb-4 text-white">Why Choose DeployP2V?</h2>
+          <p className="text-base sm:text-lg md:text-xl text-center mb-10 sm:mb-12 md:mb-16 text-gray-300 px-4">We understand small business challenges and deliver practical AI solutions that work</p>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="bg-indigo-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
-                <Zap className="w-8 h-8 text-indigo-600" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="text-center p-4">
+              <div className="bg-indigo-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <Zap className="w-6 h-6 sm:w-8 sm:h-8 text-indigo-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-4 text-white">Fast Implementation</h3>
-              <p className="text-gray-300">Get up and running in weeks, not months. Our proven processes ensure quick deployment with minimal disruption to your business.</p>
+              <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">Fast Implementation</h3>
+              <p className="text-sm sm:text-base text-gray-300 leading-relaxed">Get up and running in weeks, not months. Our proven processes ensure quick deployment with minimal disruption to your business.</p>
             </div>
 
             <div className="text-center">
