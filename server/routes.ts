@@ -75,6 +75,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete contact endpoint
+  app.delete("/api/contacts/:id", async (req, res) => {
+    try {
+      const contactId = parseInt(req.params.id);
+      if (isNaN(contactId)) {
+        return res.status(400).json({ 
+          success: false, 
+          error: "Invalid contact ID" 
+        });
+      }
+      
+      const success = await storage.deleteContact(contactId);
+      if (success) {
+        res.json({ success: true, message: "Contact deleted successfully" });
+      } else {
+        res.status(404).json({ 
+          success: false, 
+          error: "Contact not found" 
+        });
+      }
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        error: "Failed to delete contact" 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

@@ -8,6 +8,7 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   createContact(contact: InsertContact): Promise<Contact>;
   getContacts(): Promise<Contact[]>;
+  deleteContact(id: number): Promise<boolean>;
   subscribeNewsletter(newsletter: InsertNewsletter): Promise<Newsletter>;
   getNewsletterSubscribers(): Promise<Newsletter[]>;
 }

@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useLocation } from 'wouter';
-import { ArrowLeft, Mail, Phone, Building, Calendar, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, Building, Calendar, MessageSquare, Trash2, Eye, EyeOff, LogOut } from 'lucide-react';
 import { format } from 'date-fns';
+import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
 
 interface Contact {
   id: number;
@@ -19,10 +21,119 @@ interface Contact {
 
 export default function Admin() {
   const [, setLocation] = useLocation();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Simple password check (in production, use proper authentication)
+  const adminPassword = 'deployp2v2024';
+
+  const handleLogin = () => {
+    if (password === adminPassword) {
+      setIsAuthenticated(true);
+      toast({
+        title: "Login Successful",
+        description: "Welcome to the admin dashboard",
+      });
+    } else {
+      toast({
+        title: "Login Failed",
+        description: "Incorrect password",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setPassword('');
+    toast({
+      title: "Logged Out",
+      description: "You have been logged out successfully",
+    });
+  };
 
   const { data: contacts, isLoading, error } = useQuery<{ success: boolean; contacts: Contact[] }>({
     queryKey: ['/api/contacts'],
+    enabled: isAuthenticated,
   });
+
+  const deleteContactMutation = useMutation({
+    mutationFn: async (contactId: number) => {
+      return await apiRequest('DELETE', `/api/contacts/${contactId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/contacts'] });
+      toast({
+        title: "Contact Deleted",
+        description: "Contact has been successfully deleted",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete contact",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDeleteContact = (contactId: number, contactName: string) => {
+    if (confirm(`Are you sure you want to delete the contact from ${contactName}?`)) {
+      deleteContactMutation.mutate(contactId);
+    }
+  };
+
+  // Login form
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+        <Card className="w-full max-w-md bg-gray-800 border-gray-700">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl text-white">Admin Login</CardTitle>
+            <p className="text-gray-300">Enter password to access admin dashboard</p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter admin password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
+            <div className="flex gap-3">
+              <Button 
+                onClick={handleLogin}
+                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white"
+              >
+                Login
+              </Button>
+              <Button 
+                onClick={() => setLocation('/')}
+                variant="outline"
+                className="text-gray-300 border-gray-600 hover:bg-gray-700"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -66,9 +177,20 @@ export default function Admin() {
             </Button>
             <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>
           </div>
-          <Badge variant="secondary" className="bg-indigo-600">
-            {contactList.length} Total Contacts
-          </Badge>
+          <div className="flex items-center space-x-3">
+            <Badge variant="secondary" className="bg-indigo-600">
+              {contactList.length} Total Contacts
+            </Badge>
+            <Button 
+              onClick={handleLogout}
+              variant="outline"
+              size="sm"
+              className="text-gray-300 border-gray-600 hover:bg-gray-700"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -99,9 +221,20 @@ export default function Admin() {
                         Submitted {format(new Date(contact.createdAt), 'PPP at p')}
                       </p>
                     </div>
-                    <Badge variant="outline" className="text-indigo-400 border-indigo-400">
-                      ID: {contact.id}
-                    </Badge>
+                    <div className="flex items-center space-x-2">
+                      <Badge variant="outline" className="text-indigo-400 border-indigo-400">
+                        ID: {contact.id}
+                      </Badge>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeleteContact(contact.id, contact.name)}
+                        disabled={deleteContactMutation.isPending}
+                        className="text-red-400 border-red-400 hover:bg-red-400 hover:text-white"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>
