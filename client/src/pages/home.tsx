@@ -383,80 +383,80 @@ export default function Home() {
               <p className="text-sm sm:text-base text-gray-300 leading-relaxed">Get up and running in weeks, not months. Our proven processes ensure quick deployment with minimal disruption to your business.</p>
             </div>
 
-            <div className="text-center">
-              <div className="bg-indigo-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
-                <DollarSign className="w-8 h-8 text-indigo-600" />
+            <div className="text-center p-4">
+              <div className="bg-indigo-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-indigo-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-4 text-white">Affordable Solutions</h3>
-              <p className="text-gray-300">Enterprise-grade AI without the enterprise price tag. Our solutions pay for themselves through improved efficiency and cost savings.</p>
+              <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">Affordable Solutions</h3>
+              <p className="text-sm sm:text-base text-gray-300 leading-relaxed">Enterprise-grade AI without the enterprise price tag. Our solutions pay for themselves through improved efficiency and cost savings.</p>
             </div>
 
-            <div className="text-center">
-              <div className="bg-indigo-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
-                <HeadphonesIcon className="w-8 h-8 text-indigo-600" />
+            <div className="text-center p-4">
+              <div className="bg-indigo-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <HeadphonesIcon className="w-6 h-6 sm:w-8 sm:h-8 text-indigo-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-4 text-white">Personalized Support</h3>
-              <p className="text-gray-300">Direct access to our AI experts who understand your business. No call centers or ticket systems - just real people who care about your success.</p>
+              <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">Personalized Support</h3>
+              <p className="text-sm sm:text-base text-gray-300 leading-relaxed">Direct access to our AI experts who understand your business. No call centers or ticket systems - just real people who care about your success.</p>
             </div>
 
-            <div className="text-center">
-              <div className="bg-indigo-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
-                <Shield className="w-8 h-8 text-indigo-600" />
+            <div className="text-center p-4">
+              <div className="bg-indigo-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <Shield className="w-6 h-6 sm:w-8 sm:h-8 text-indigo-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-4 text-white">Proven Results</h3>
-              <p className="text-gray-300">Our clients typically see 40% improvement in operational efficiency and 25% cost reduction within the first 6 months of implementation.</p>
+              <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">Proven Results</h3>
+              <p className="text-sm sm:text-base text-gray-300 leading-relaxed">Our clients typically see 40% improvement in operational efficiency and 25% cost reduction within the first 6 months of implementation.</p>
             </div>
 
-            <div className="text-center">
-              <div className="bg-indigo-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
-                <Settings className="w-8 h-8 text-indigo-600" />
+            <div className="text-center p-4">
+              <div className="bg-indigo-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <Settings className="w-6 h-6 sm:w-8 sm:h-8 text-indigo-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-4 text-white">Tailored Solutions</h3>
-              <p className="text-gray-300">Every solution is customized for your specific industry and business needs. No cookie-cutter approaches - just AI that works for you.</p>
+              <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">Tailored Solutions</h3>
+              <p className="text-sm sm:text-base text-gray-300 leading-relaxed">Every solution is customized for your specific industry and business needs. No cookie-cutter approaches - just AI that works for you.</p>
             </div>
 
-            <div className="text-center">
-              <div className="bg-indigo-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
-                <Heart className="w-8 h-8 text-indigo-600" />
+            <div className="text-center p-4">
+              <div className="bg-indigo-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-indigo-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-4 text-white">Long-term Partnership</h3>
-              <p className="text-gray-300">We're not just vendors - we're partners in your growth. Ongoing support, updates, and optimization to ensure continued success.</p>
+              <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">Long-term Partnership</h3>
+              <p className="text-sm sm:text-base text-gray-300 leading-relaxed">We're not just vendors - we're partners in your growth. Ongoing support, updates, and optimization to ensure continued success.</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-16 md:py-24 bg-gray-800">
+      <section id="about" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gray-800">
         <div className={commonClasses.container}>
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl font-bold mb-6 text-white">About DeployP2V</h2>
-            <p className="text-xl text-gray-300 mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-white">About DeployP2V</h2>
+            <p className="text-base sm:text-lg md:text-xl text-gray-300 mb-8 sm:mb-10 md:mb-12 px-4 leading-relaxed">
               We're a team of AI specialists and business consultants dedicated to making artificial intelligence accessible and practical for small businesses. Our mission is to level the playing field by giving small companies the same AI advantages that large corporations enjoy.
             </p>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-              <div className="text-center">
-                <div className="text-4xl font-bold text-indigo-400 mb-2">50+</div>
-                <div className="text-gray-300">Small Businesses Served</div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-12 md:mb-16">
+              <div className="text-center p-4">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-indigo-400 mb-2">50+</div>
+                <div className="text-sm sm:text-base text-gray-300">Small Businesses Served</div>
               </div>
-              <div className="text-center">
-                <div className="text-4xl font-bold text-indigo-400 mb-2">95%</div>
-                <div className="text-gray-300">Client Satisfaction Rate</div>
+              <div className="text-center p-4">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-indigo-400 mb-2">95%</div>
+                <div className="text-sm sm:text-base text-gray-300">Client Satisfaction Rate</div>
               </div>
-              <div className="text-center">
-                <div className="text-4xl font-bold text-indigo-400 mb-2">2M+</div>
-                <div className="text-gray-300">Hours Automated</div>
+              <div className="text-center p-4">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-indigo-400 mb-2">2M+</div>
+                <div className="text-sm sm:text-base text-gray-300">Hours Automated</div>
               </div>
             </div>
 
             <Card className="bg-gray-700 border-gray-600">
-              <CardContent className="p-8">
-                <h3 className="text-2xl font-semibold mb-4 text-white">Our Philosophy</h3>
-                <p className="text-gray-300 text-lg">
+              <CardContent className="p-6 sm:p-8">
+                <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-white">Our Philosophy</h3>
+                <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
                   "AI shouldn't be complex or intimidating. We believe in creating solutions that are intuitive, effective, and designed specifically for the unique challenges that small businesses face. Every implementation is backed by real business outcomes, not just impressive technology."
                 </p>
-                <div className="mt-6">
+                <div className="mt-4 sm:mt-6">
                   <div className="text-indigo-400 font-semibold">- The DeployP2V Team</div>
                 </div>
               </CardContent>
@@ -466,12 +466,12 @@ export default function Home() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-16 md:py-24 bg-gray-900">
+      <section id="contact" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gray-900">
         <div className={commonClasses.container}>
           <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold mb-4 text-white">Ready to Transform Your Business with AI?</h2>
-              <p className="text-xl text-gray-300">Let's discuss how AI can solve your specific business challenges. Get a free consultation today.</p>
+            <div className="text-center mb-8 sm:mb-10 md:mb-12">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 text-white">Ready to Transform Your Business with AI?</h2>
+              <p className="text-base sm:text-lg md:text-xl text-gray-300 px-4">Let's discuss how AI can solve your specific business challenges. Get a free consultation today.</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
@@ -560,47 +560,47 @@ export default function Home() {
               </Card>
 
               {/* Contact Information */}
-              <div className="space-y-8">
+              <div className="space-y-6 sm:space-y-8">
                 <div>
-                  <h3 className="text-2xl font-semibold mb-6 text-white">Get in Touch</h3>
-                  <div className="space-y-4">
+                  <h3 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-white">Get in Touch</h3>
+                  <div className="space-y-3 sm:space-y-4">
                     <div className="flex items-center">
-                      <Mail className="w-6 h-6 text-indigo-400 mr-4" />
-                      <span className="text-gray-300">tsparks@deployp2v.com</span>
+                      <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-400 mr-3 sm:mr-4 flex-shrink-0" />
+                      <span className="text-sm sm:text-base text-gray-300 break-all">tsparks@deployp2v.com</span>
                     </div>
                     <div className="flex items-center">
-                      <Phone className="w-6 h-6 text-indigo-400 mr-4" />
-                      <span className="text-gray-300">(214) 604-5735</span>
+                      <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-400 mr-3 sm:mr-4 flex-shrink-0" />
+                      <span className="text-sm sm:text-base text-gray-300">(214) 604-5735</span>
                     </div>
                     <div className="flex items-center">
-                      <MapPin className="w-6 h-6 text-indigo-400 mr-4" />
-                      <span className="text-gray-300">Wylie, TX</span>
+                      <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-400 mr-3 sm:mr-4 flex-shrink-0" />
+                      <span className="text-sm sm:text-base text-gray-300">Wylie, TX</span>
                     </div>
                   </div>
                 </div>
 
                 <Card className="bg-gray-800 border-gray-700">
-                  <CardContent className="p-6">
-                    <h4 className="text-lg font-semibold mb-3 text-white">What Happens Next?</h4>
+                  <CardContent className="p-4 sm:p-6">
+                    <h4 className="text-base sm:text-lg font-semibold mb-3 text-white">What Happens Next?</h4>
                     <div className="space-y-3">
                       <div className="flex items-start">
-                        <div className="bg-indigo-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold mr-3 mt-0.5">1</div>
-                        <p className="text-gray-300">We'll review your submission and schedule a 30-minute discovery call</p>
+                        <div className="bg-indigo-600 text-white rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center text-xs sm:text-sm font-semibold mr-2 sm:mr-3 mt-0.5 flex-shrink-0">1</div>
+                        <p className="text-xs sm:text-sm md:text-base text-gray-300 leading-relaxed">We'll review your submission and schedule a 30-minute discovery call</p>
                       </div>
                       <div className="flex items-start">
-                        <div className="bg-indigo-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold mr-3 mt-0.5">2</div>
-                        <p className="text-gray-300">During the call, we'll analyze your specific needs and challenges</p>
+                        <div className="bg-indigo-600 text-white rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center text-xs sm:text-sm font-semibold mr-2 sm:mr-3 mt-0.5 flex-shrink-0">2</div>
+                        <p className="text-xs sm:text-sm md:text-base text-gray-300 leading-relaxed">During the call, we'll analyze your specific needs and challenges</p>
                       </div>
                       <div className="flex items-start">
-                        <div className="bg-indigo-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold mr-3 mt-0.5">3</div>
-                        <p className="text-gray-300">We'll provide a customized AI strategy and implementation roadmap</p>
+                        <div className="bg-indigo-600 text-white rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center text-xs sm:text-sm font-semibold mr-2 sm:mr-3 mt-0.5 flex-shrink-0">3</div>
+                        <p className="text-xs sm:text-sm md:text-base text-gray-300 leading-relaxed">We'll provide a customized AI strategy and implementation roadmap</p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
                 <div className="text-center">
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-gray-400 text-xs sm:text-sm leading-relaxed px-2">
                     Typically respond within 24 hours • No spam, ever • Your information is secure
                   </p>
                 </div>
