@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useLocation } from 'wouter';
+import ChatbotWidget from '@/components/ChatbotWidget';
 import { 
   MessageSquare, 
   BarChart3, 
@@ -663,16 +664,8 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* Floating Contact Button */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button 
-          onClick={() => scrollToSection('contact')}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-        >
-          <MessageSquare className="w-5 h-5 mr-2" />
-          Free Consultation
-        </Button>
-      </div>
+      {/* Chatbot Widget */}
+      <ChatbotWidget onBookAppointment={() => scrollToSection('contact')} />
     </div>
   );
 }
