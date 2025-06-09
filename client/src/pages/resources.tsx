@@ -218,7 +218,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource }) => (
 
 export default function Resources() {
   const [, setLocation] = useLocation();
-  const [selectedWebinar, setSelectedWebinar] = useState<typeof webinars[0] | null>(null);
+  const [selectedWebinar, setSelectedWebinar] = useState<Webinar | null>(null);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   return (
