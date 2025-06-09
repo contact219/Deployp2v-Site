@@ -299,9 +299,10 @@ const tools = [
 
 interface ResourceCardProps {
   resource: typeof resources[0];
+  onDownload: (resource: typeof resources[0]) => void;
 }
 
-const ResourceCard: React.FC<ResourceCardProps> = ({ resource }) => (
+const ResourceCard: React.FC<ResourceCardProps> = ({ resource, onDownload }) => (
   <Card className={`bg-gray-800 border-gray-700 h-full ${resource.featured ? 'border-indigo-500' : ''}`}>
     {resource.featured && (
       <div className="bg-indigo-600 text-white text-center py-2 text-sm font-semibold rounded-t-lg">
@@ -328,6 +329,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource }) => (
           variant="outline"
           size="sm"
           className="text-indigo-400 border-indigo-400 hover:bg-indigo-400 hover:text-white"
+          onClick={() => onDownload(resource)}
         >
           <Download className="w-4 h-4 mr-2" />
           Download
@@ -343,6 +345,13 @@ export default function Resources() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [selectedTool, setSelectedTool] = useState<typeof tools[0] | null>(null);
   const [isToolModalOpen, setIsToolModalOpen] = useState(false);
+  const [selectedResource, setSelectedResource] = useState<typeof resources[0] | null>(null);
+  const [isResourceModalOpen, setIsResourceModalOpen] = useState(false);
+
+  const handleDownload = (resource: typeof resources[0]) => {
+    setSelectedResource(resource);
+    setIsResourceModalOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -386,7 +395,7 @@ export default function Resources() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {resources.map((resource) => (
-              <ResourceCard key={resource.id} resource={resource} />
+              <ResourceCard key={resource.id} resource={resource} onDownload={handleDownload} />
             ))}
           </div>
         </div>
@@ -585,7 +594,7 @@ export default function Resources() {
             </DialogTitle>
           </DialogHeader>
           
-          {selectedTool && selectedTool.id === 2 && (
+          {selectedTool && selectedTool.id === 2 && selectedTool.content && 'sections' in selectedTool.content && (
             <div className="space-y-6">
               <div className="text-center mb-6">
                 <p className="text-gray-300 text-lg">
@@ -635,7 +644,7 @@ export default function Resources() {
             </div>
           )}
 
-          {selectedTool && selectedTool.id === 3 && (
+          {selectedTool && selectedTool.id === 3 && selectedTool.content && 'technologies' in selectedTool.content && (
             <div className="space-y-6">
               <div className="text-center mb-6">
                 <p className="text-gray-300 text-lg">
@@ -696,7 +705,7 @@ export default function Resources() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
-                {selectedTool.content.technologies.map((tech, index) => (
+                {selectedTool.content && 'technologies' in selectedTool.content && selectedTool.content.technologies.map((tech, index) => (
                   <Card key={index} className="bg-gray-700 border-gray-600">
                     <CardHeader>
                       <CardTitle className="text-white text-lg">{tech.name}</CardTitle>
@@ -734,6 +743,190 @@ export default function Resources() {
                 >
                   Get Expert Consultation
                 </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Resource Download Modal */}
+      <Dialog open={isResourceModalOpen} onOpenChange={setIsResourceModalOpen}>
+        <DialogContent className="max-w-2xl w-full bg-gray-800 border-gray-700">
+          <DialogHeader>
+            <DialogTitle className="text-white text-xl mb-4">
+              {selectedResource?.title}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedResource && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-indigo-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <FileText className="w-8 h-8 text-white" />
+                </div>
+                <p className="text-gray-300 mb-4">{selectedResource.description}</p>
+                
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="bg-gray-700 p-3 rounded">
+                    <div className="text-gray-400 text-sm">Type</div>
+                    <div className="text-white font-medium">{selectedResource.type}</div>
+                  </div>
+                  <div className="bg-gray-700 p-3 rounded">
+                    <div className="text-gray-400 text-sm">Length</div>
+                    <div className="text-white font-medium">{selectedResource.pages}</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-700 p-4 rounded-lg">
+                <h3 className="text-white font-semibold mb-3">What's Included:</h3>
+                <ul className="space-y-2">
+                  {selectedResource.id === 1 && (
+                    <>
+                      <li className="flex items-start text-gray-300 text-sm">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        Step-by-step AI implementation roadmap
+                      </li>
+                      <li className="flex items-start text-gray-300 text-sm">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        Technology selection framework
+                      </li>
+                      <li className="flex items-start text-gray-300 text-sm">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        Budget planning templates
+                      </li>
+                      <li className="flex items-start text-gray-300 text-sm">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        Success metrics and KPIs
+                      </li>
+                    </>
+                  )}
+                  {selectedResource.id === 2 && (
+                    <>
+                      <li className="flex items-start text-gray-300 text-sm">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        Cost-benefit analysis worksheet
+                      </li>
+                      <li className="flex items-start text-gray-300 text-sm">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        ROI projection formulas
+                      </li>
+                      <li className="flex items-start text-gray-300 text-sm">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        Risk assessment matrix
+                      </li>
+                    </>
+                  )}
+                  {selectedResource.id === 3 && (
+                    <>
+                      <li className="flex items-start text-gray-300 text-sm">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        Comprehensive readiness checklist
+                      </li>
+                      <li className="flex items-start text-gray-300 text-sm">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        Infrastructure requirements
+                      </li>
+                      <li className="flex items-start text-gray-300 text-sm">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        Team capability assessment
+                      </li>
+                    </>
+                  )}
+                  {selectedResource.id === 4 && (
+                    <>
+                      <li className="flex items-start text-gray-300 text-sm">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        15+ industry-specific examples
+                      </li>
+                      <li className="flex items-start text-gray-300 text-sm">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        Implementation timelines
+                      </li>
+                      <li className="flex items-start text-gray-300 text-sm">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        Cost estimates by use case
+                      </li>
+                    </>
+                  )}
+                  {selectedResource.id === 5 && (
+                    <>
+                      <li className="flex items-start text-gray-300 text-sm">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        Vendor comparison matrix
+                      </li>
+                      <li className="flex items-start text-gray-300 text-sm">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        Key questions to ask vendors
+                      </li>
+                      <li className="flex items-start text-gray-300 text-sm">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        Contract negotiation tips
+                      </li>
+                    </>
+                  )}
+                  {selectedResource.id === 6 && (
+                    <>
+                      <li className="flex items-start text-gray-300 text-sm">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        Change management strategies
+                      </li>
+                      <li className="flex items-start text-gray-300 text-sm">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        Training program templates
+                      </li>
+                      <li className="flex items-start text-gray-300 text-sm">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        Communication guidelines
+                      </li>
+                    </>
+                  )}
+                </ul>
+              </div>
+              
+              <div className="bg-yellow-900/20 border border-yellow-600 p-4 rounded-lg">
+                <div className="flex items-start">
+                  <div className="w-5 h-5 bg-yellow-600 rounded-full flex items-center justify-center mr-3 mt-0.5">
+                    <span className="text-white text-xs font-bold">!</span>
+                  </div>
+                  <div>
+                    <h4 className="text-yellow-400 font-semibold mb-1">Free Resource Download</h4>
+                    <p className="text-gray-300 text-sm">
+                      Provide your email to receive this free resource and join our newsletter for more AI insights.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <input
+                  type="email"
+                  placeholder="Enter your email address"
+                  className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                />
+                <div className="flex gap-3">
+                  <Button 
+                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white"
+                    onClick={() => {
+                      // Simulate download
+                      setIsResourceModalOpen(false);
+                      // In a real app, this would trigger the download and newsletter signup
+                    }}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Download Now
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => setIsResourceModalOpen(false)}
+                    className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+                <p className="text-xs text-gray-400 text-center">
+                  We respect your privacy. Unsubscribe at any time.
+                </p>
               </div>
             </div>
           )}
