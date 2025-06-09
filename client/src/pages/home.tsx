@@ -560,7 +560,7 @@ export default function Home() {
                   <div className="space-y-4">
                     <div className="flex items-center">
                       <Mail className="w-6 h-6 text-indigo-400 mr-4" />
-                      <span className="text-gray-300">contact@deployp2v.com</span>
+                      <span className="text-gray-300">tsparks@deployp2v.com</span>
                     </div>
                     <div className="flex items-center">
                       <Phone className="w-6 h-6 text-indigo-400 mr-4" />

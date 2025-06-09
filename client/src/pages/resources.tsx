@@ -93,7 +93,7 @@ const webinars: Webinar[] = [
     description: "60-minute overview of AI technologies and their practical applications.",
     duration: "60 minutes",
     date: "Available On-Demand",
-    videoUrl: "https://www.youtube.com/embed/YOUR_VIDEO_ID_1",
+    videoUrl: "https://www.youtube.com/embed/nkuPUJVzB_E",
     content: {
       overview: "This comprehensive webinar covers the essential AI technologies that small business owners need to understand in 2024.",
       keyTopics: [
@@ -114,7 +114,7 @@ const webinars: Webinar[] = [
     description: "Interactive session on measuring and projecting AI investment returns.",
     duration: "45 minutes",
     date: "Available On-Demand",
-    videoUrl: "https://www.youtube.com/embed/YOUR_VIDEO_ID_2",
+    videoUrl: "https://www.youtube.com/embed/1JPifm2tHGM",
     content: {
       overview: "Learn how to calculate and project return on investment for AI initiatives using real business scenarios.",
       keyTopics: [
@@ -135,7 +135,7 @@ const webinars: Webinar[] = [
     description: "Learn from real case studies of what works and what doesn't.",
     duration: "50 minutes",
     date: "Available On-Demand",
-    videoUrl: "https://www.youtube.com/embed/YOUR_VIDEO_ID_3",
+    videoUrl: "https://www.youtube.com/embed/D_eIgSiUpB0",
     content: {
       overview: "Avoid costly mistakes by learning from businesses that have successfully (and unsuccessfully) implemented AI solutions.",
       keyTopics: [
@@ -604,7 +604,7 @@ F. Success Metrics Dashboard
 
 ---
 This guide was created by DeployP2V to help small businesses successfully implement AI solutions.
-For personalized guidance, contact us at contact@deployp2v.com or call 214-604-5735.
+For personalized guidance, contact us at tsparks@deployp2v.com or call 214-604-5735.
 
 © 2024 DeployP2V. All rights reserved.`;
   };
@@ -1231,7 +1231,7 @@ GETTING STARTED
 
 ---
 This guide was compiled by DeployP2V based on real client implementations and industry research.
-For industry-specific consultation, contact us at contact@deployp2v.com or call 214-604-5735.
+For industry-specific consultation, contact us at tsparks@deployp2v.com or call 214-604-5735.
 
 © 2024 DeployP2V. All rights reserved.`;
   };
@@ -1479,7 +1479,7 @@ Review Date: ______________________
 
 ---
 This evaluation template was created by DeployP2V to help businesses make informed vendor selection decisions.
-For assistance with vendor evaluation, contact us at contact@deployp2v.com or call 214-604-5735.
+For assistance with vendor evaluation, contact us at tsparks@deployp2v.com or call 214-604-5735.
 
 © 2024 DeployP2V. All rights reserved.`;
   };
@@ -1819,7 +1819,7 @@ Long-term Success Factors:
 
 ---
 This change management guide was developed by DeployP2V based on successful AI implementations across various industries.
-For change management consulting and support, contact us at contact@deployp2v.com or call 214-604-5735.
+For change management consulting and support, contact us at tsparks@deployp2v.com or call 214-604-5735.
 
 © 2024 DeployP2V. All rights reserved.`;
   };
@@ -1854,7 +1854,7 @@ GETTING STARTED
 5. Choose the right technology partners
 
 For personalized guidance and support, contact DeployP2V:
-Email: contact@deployp2v.com
+Email: tsparks@deployp2v.com
 Phone: 214-604-5735
 Location: Wylie, TX
 

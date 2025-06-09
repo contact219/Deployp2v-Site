@@ -170,7 +170,7 @@ export default function TermsOfService() {
             </p>
             <div className="bg-gray-800 p-4 rounded-lg mt-4">
               <p className="text-gray-300">
-                <strong>Email:</strong> contact@deployp2v.com<br/>
+                <strong>Email:</strong> tsparks@deployp2v.com<br/>
                 <strong>Phone:</strong> (214) 604-5735<br/>
                 <strong>Address:</strong> DeployP2V AI Solutions<br/>
                 Wylie, TX
