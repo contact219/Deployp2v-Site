@@ -93,7 +93,7 @@ const webinars: Webinar[] = [
     description: "60-minute overview of AI technologies and their practical applications.",
     duration: "60 minutes",
     date: "Available On-Demand",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    videoUrl: "https://www.youtube.com/embed/YOUR_VIDEO_ID_1",
     content: {
       overview: "This comprehensive webinar covers the essential AI technologies that small business owners need to understand in 2024.",
       keyTopics: [
@@ -114,7 +114,7 @@ const webinars: Webinar[] = [
     description: "Interactive session on measuring and projecting AI investment returns.",
     duration: "45 minutes",
     date: "Available On-Demand",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    videoUrl: "https://www.youtube.com/embed/YOUR_VIDEO_ID_2",
     content: {
       overview: "Learn how to calculate and project return on investment for AI initiatives using real business scenarios.",
       keyTopics: [
@@ -135,7 +135,7 @@ const webinars: Webinar[] = [
     description: "Learn from real case studies of what works and what doesn't.",
     duration: "50 minutes",
     date: "Available On-Demand",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    videoUrl: "https://www.youtube.com/embed/YOUR_VIDEO_ID_3",
     content: {
       overview: "Avoid costly mistakes by learning from businesses that have successfully (and unsuccessfully) implemented AI solutions.",
       keyTopics: [
