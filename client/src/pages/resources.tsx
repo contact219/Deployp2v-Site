@@ -1,8 +1,27 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useLocation } from 'wouter';
-import { ArrowLeft, Download, ExternalLink, FileText, Video, BookOpen, Lightbulb } from 'lucide-react';
+import { ArrowLeft, Download, ExternalLink, FileText, Video, BookOpen, Lightbulb, X } from 'lucide-react';
+
+interface WebinarContent {
+  overview: string;
+  keyTopics: string[];
+  presenter: string;
+  audience: string;
+}
+
+interface Webinar {
+  id: number;
+  title: string;
+  description: string;
+  duration: string;
+  date: string;
+  videoUrl: string;
+  content: WebinarContent;
+}
 
 const resources = [
   {
@@ -67,14 +86,27 @@ const resources = [
   }
 ];
 
-const webinars = [
+const webinars: Webinar[] = [
   {
     id: 1,
     title: "AI Fundamentals for Small Business Owners",
     description: "60-minute overview of AI technologies and their practical applications.",
     duration: "60 minutes",
     date: "Available On-Demand",
-    videoUrl: "#"
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    content: {
+      overview: "This comprehensive webinar covers the essential AI technologies that small business owners need to understand in 2024.",
+      keyTopics: [
+        "Introduction to Machine Learning and AI",
+        "Practical AI Applications for Small Business",
+        "Cost-Benefit Analysis of AI Implementation",
+        "Getting Started: First Steps and Quick Wins",
+        "Common Misconceptions About AI",
+        "Q&A Session with Real Business Examples"
+      ],
+      presenter: "Sarah Johnson, AI Solutions Consultant",
+      audience: "Small business owners with 5-100 employees"
+    }
   },
   {
     id: 2,
@@ -82,7 +114,20 @@ const webinars = [
     description: "Interactive session on measuring and projecting AI investment returns.",
     duration: "45 minutes",
     date: "Available On-Demand",
-    videoUrl: "#"
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    content: {
+      overview: "Learn how to calculate and project return on investment for AI initiatives using real business scenarios.",
+      keyTopics: [
+        "ROI Calculation Methodologies",
+        "Direct Cost Savings Measurement",
+        "Productivity Gain Quantification",
+        "Long-term Value Assessment",
+        "Risk Factors and Mitigation",
+        "Live Calculation Exercise"
+      ],
+      presenter: "Michael Chen, Business Analytics Expert",
+      audience: "Business owners and financial decision makers"
+    }
   },
   {
     id: 3,
@@ -90,7 +135,20 @@ const webinars = [
     description: "Learn from real case studies of what works and what doesn't.",
     duration: "50 minutes",
     date: "Available On-Demand",
-    videoUrl: "#"
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    content: {
+      overview: "Avoid costly mistakes by learning from businesses that have successfully (and unsuccessfully) implemented AI solutions.",
+      keyTopics: [
+        "Top 10 AI Implementation Failures",
+        "Data Quality Issues and Solutions",
+        "Change Management Challenges",
+        "Vendor Selection Mistakes",
+        "Success Stories and Lessons Learned",
+        "Best Practices Checklist"
+      ],
+      presenter: "Dr. Amanda Rodriguez, AI Implementation Specialist",
+      audience: "Business leaders planning AI initiatives"
+    }
   }
 ];
 
@@ -160,6 +218,8 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource }) => (
 
 export default function Resources() {
   const [, setLocation] = useLocation();
+  const [selectedWebinar, setSelectedWebinar] = useState<typeof webinars[0] | null>(null);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -237,6 +297,10 @@ export default function Resources() {
                   <Button 
                     variant="outline"
                     className="w-full text-indigo-400 border-indigo-400 hover:bg-indigo-400 hover:text-white"
+                    onClick={() => {
+                      setSelectedWebinar(webinar);
+                      setIsVideoModalOpen(true);
+                    }}
                   >
                     <Video className="w-4 h-4 mr-2" />
                     Watch Now
@@ -304,6 +368,83 @@ export default function Resources() {
           </Button>
         </div>
       </section>
+
+      {/* Video Modal */}
+      <Dialog open={isVideoModalOpen} onOpenChange={setIsVideoModalOpen}>
+        <DialogContent className="max-w-4xl w-full bg-gray-800 border-gray-700">
+          <DialogHeader>
+            <DialogTitle className="text-white text-xl mb-4">
+              {selectedWebinar?.title}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedWebinar && (
+            <div className="space-y-6">
+              {/* Video Player */}
+              <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
+                <iframe
+                  src={selectedWebinar.videoUrl}
+                  title={selectedWebinar.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full"
+                />
+              </div>
+              
+              {/* Webinar Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Left Column - Overview */}
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3">Overview</h3>
+                  <p className="text-gray-300 mb-4">{selectedWebinar.content.overview}</p>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center text-gray-400 text-sm">
+                      <Video className="w-4 h-4 mr-2" />
+                      Duration: {selectedWebinar.duration}
+                    </div>
+                    <div className="text-gray-400 text-sm">
+                      <strong>Presenter:</strong> {selectedWebinar.content.presenter}
+                    </div>
+                    <div className="text-gray-400 text-sm">
+                      <strong>Target Audience:</strong> {selectedWebinar.content.audience}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Right Column - Key Topics */}
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3">Key Topics Covered</h3>
+                  <ul className="space-y-2">
+                    {selectedWebinar.content.keyTopics.map((topic, index) => (
+                      <li key={index} className="flex items-start text-gray-300 text-sm">
+                        <span className="w-2 h-2 bg-indigo-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                        {topic}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              
+              {/* Call to Action */}
+              <div className="bg-gray-700 p-4 rounded-lg">
+                <p className="text-gray-300 mb-3">
+                  Ready to implement what you've learned? Get personalized guidance for your business.
+                </p>
+                <Button 
+                  onClick={() => {
+                    setIsVideoModalOpen(false);
+                    setLocation('/');
+                  }}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                >
+                  Schedule Free Consultation
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
