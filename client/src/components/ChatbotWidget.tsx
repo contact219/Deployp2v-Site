@@ -248,6 +248,50 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
           { id: 'more_resources', text: 'More Resources', action: 'show_resources' }
         ];
         break;
+
+      case 'detail_customer_support':
+        response = "AI Customer Support & Chatbots:\n\n🤖 24/7 automated customer service\n💬 Intelligent chatbots that understand context\n📞 Multi-channel support (website, social media, email)\n🎯 Lead qualification and routing\n📊 Customer sentiment analysis\n🔄 Seamless handoff to human agents when needed\n\nTypical results: 70-90% of inquiries handled automatically, 50% reduction in response time, 24/7 availability.\n\nWould you like to see how this works for your industry?";
+        buttons = [
+          { id: 'industry_demo', text: 'Industry-Specific Demo', action: 'show_industry_demo' },
+          { id: 'pricing_cs', text: 'See Pricing', action: 'show_pricing_details' },
+          { id: 'book_cs_demo', text: 'Book Demo Call', action: 'book_appointment' }
+        ];
+        break;
+
+      case 'detail_analytics':
+        response = "Predictive Analytics & Sales Forecasting:\n\n📈 Sales trend prediction and forecasting\n🎯 Customer behavior analysis\n💡 Marketing campaign optimization\n🔍 Lead scoring and prioritization\n📊 Performance dashboards and reporting\n🎪 Market trend identification\n\nTypical results: 15-25% increase in conversion rates, 30% better lead qualification, 40% improvement in marketing ROI.\n\nWhich aspect interests you most?";
+        buttons = [
+          { id: 'lead_scoring', text: 'Lead Scoring', action: 'detail_lead_scoring' },
+          { id: 'sales_forecast', text: 'Sales Forecasting', action: 'detail_sales_forecast' },
+          { id: 'marketing_opt', text: 'Marketing Optimization', action: 'detail_marketing' }
+        ];
+        break;
+
+      case 'detail_automation':
+        response = "Business Process Automation:\n\n⚡ Automated data entry and processing\n📄 Document classification and routing\n📧 Email automation and responses\n📝 Invoice processing and accounting\n🔄 Workflow optimization\n📋 Task scheduling and management\n\nTypical results: 80% reduction in manual data entry, 60% faster document processing, 90% fewer errors.\n\nWhat processes would you like to automate?";
+        buttons = [
+          { id: 'data_entry', text: 'Data Entry Automation', action: 'detail_data_entry' },
+          { id: 'document_proc', text: 'Document Processing', action: 'detail_documents' },
+          { id: 'workflow_opt', text: 'Workflow Optimization', action: 'detail_workflow' }
+        ];
+        break;
+
+      case 'show_all_services':
+        response = "Complete AI Solutions Portfolio:\n\n🤖 AI Customer Support & Chatbots\n📊 Predictive Analytics & Forecasting\n⚡ Business Process Automation\n📝 Document Processing & OCR\n🎯 AI-Enhanced CRM Systems\n📅 Automated Scheduling & Booking\n📈 Market Research & Analysis\n💼 Internal Productivity Apps\n\nAll solutions are:\n✅ Customized for your industry\n✅ Implemented in 2-4 weeks\n✅ Backed by ongoing support\n✅ Designed to pay for themselves\n\nReady to get started?";
+        buttons = [
+          { id: 'start_assessment', text: 'Take AI Assessment', action: 'start_assessment' },
+          { id: 'book_consultation', text: 'Book Consultation', action: 'book_appointment' },
+          { id: 'see_pricing', text: 'View Pricing', action: 'show_pricing_details' }
+        ];
+        break;
+
+      case 'show_pricing_details':
+        response = "Our Transparent Pricing:\n\n🚀 STARTER - $299/month\n• 1 AI solution implementation\n• Basic customization\n• Email support\n• Monthly reports\n\n💼 PROFESSIONAL - $599/month\n• Up to 3 AI solutions\n• Advanced customization\n• Priority phone & email support\n• Weekly analytics\n• Integration support\n\n🏢 ENTERPRISE - Custom pricing\n• Unlimited AI solutions\n• Dedicated support manager\n• Custom development\n• On-site training\n\nAll plans include free consultation and setup. Most clients see ROI within 3-6 months.";
+        buttons = [
+          { id: 'book_pricing', text: 'Discuss Pricing', action: 'book_appointment' },
+          { id: 'roi_details', text: 'Calculate My ROI', action: 'provide_roi_calculator' }
+        ];
+        break;
     }
     
     // Handle assessment answers
