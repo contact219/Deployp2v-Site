@@ -292,6 +292,67 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
           { id: 'roi_details', text: 'Calculate My ROI', action: 'provide_roi_calculator' }
         ];
         break;
+
+      // Second-level detail handlers
+      case 'detail_lead_scoring':
+        response = "AI Lead Scoring System:\n\n🎯 Automatic lead qualification based on behavior\n📊 Scoring algorithms trained on your successful sales\n🔄 Real-time lead prioritization\n📈 Integration with your existing CRM\n💡 Predictive buying intent analysis\n📋 Customizable scoring criteria\n\nResults: 30% improvement in conversion rates, 50% better sales team efficiency.\n\nWant to see how this works with your current leads?";
+        buttons = [
+          { id: 'demo_scoring', text: 'Request Demo', action: 'book_appointment' },
+          { id: 'integration_help', text: 'CRM Integration Info', action: 'show_integration_details' }
+        ];
+        break;
+
+      case 'detail_sales_forecast':
+        response = "Predictive Sales Forecasting:\n\n📈 AI-powered revenue predictions\n📊 Seasonal trend analysis\n🎯 Pipeline probability scoring\n📅 Monthly/quarterly forecasting\n💰 Revenue optimization recommendations\n📉 Risk factor identification\n\nResults: 85% forecast accuracy, 25% improvement in revenue planning.\n\nReady to improve your sales predictions?";
+        buttons = [
+          { id: 'forecast_demo', text: 'See Forecast Demo', action: 'book_appointment' },
+          { id: 'accuracy_info', text: 'Accuracy Details', action: 'show_accuracy_details' }
+        ];
+        break;
+
+      case 'detail_marketing':
+        response = "AI Marketing Optimization:\n\n📱 Campaign performance analysis\n🎯 Audience segmentation and targeting\n💰 Budget allocation optimization\n📊 A/B testing automation\n🔄 Real-time campaign adjustments\n📈 ROI tracking and reporting\n\nResults: 40% improvement in marketing ROI, 60% better targeting accuracy.\n\nWhich marketing channels do you want to optimize?";
+        buttons = [
+          { id: 'channel_analysis', text: 'Channel Analysis', action: 'show_channel_details' },
+          { id: 'marketing_demo', text: 'Book Marketing Demo', action: 'book_appointment' }
+        ];
+        break;
+
+      case 'detail_data_entry':
+        response = "Automated Data Entry Solutions:\n\n⚡ OCR document scanning and processing\n📄 Form data extraction and validation\n🔄 Database integration and sync\n📊 Real-time data verification\n🎯 Custom field mapping\n📋 Error detection and correction\n\nResults: 80% reduction in manual entry time, 95% accuracy improvement.\n\nWhat types of documents do you process most?";
+        buttons = [
+          { id: 'document_types', text: 'Document Types', action: 'show_document_options' },
+          { id: 'data_demo', text: 'See Data Demo', action: 'book_appointment' }
+        ];
+        break;
+
+      case 'detail_documents':
+        response = "Document Processing Automation:\n\n📄 Invoice and receipt processing\n📋 Contract analysis and extraction\n📊 Report generation automation\n🔍 Document classification\n📁 Automated filing and organization\n✅ Compliance checking\n\nResults: 70% faster document processing, 90% reduction in filing errors.\n\nWhich document types need automation?";
+        buttons = [
+          { id: 'invoice_processing', text: 'Invoice Processing', action: 'show_invoice_details' },
+          { id: 'contract_analysis', text: 'Contract Analysis', action: 'show_contract_details' }
+        ];
+        break;
+
+      case 'detail_workflow':
+        response = "Workflow Optimization with AI:\n\n🔄 Process mapping and analysis\n⚡ Bottleneck identification\n📋 Task automation and routing\n👥 Team coordination optimization\n📊 Performance monitoring\n🎯 Continuous improvement recommendations\n\nResults: 45% faster task completion, 60% improvement in team efficiency.\n\nWhat workflows cause the most delays?";
+        buttons = [
+          { id: 'workflow_analysis', text: 'Workflow Analysis', action: 'book_appointment' },
+          { id: 'process_mapping', text: 'Process Mapping Info', action: 'show_process_details' }
+        ];
+        break;
+
+      // Generic fallback for unhandled actions
+      default:
+        if (action.startsWith('show_') || action.startsWith('detail_')) {
+          response = "I'd be happy to provide more details about this! Let me connect you with one of our AI specialists who can give you comprehensive information and answer all your questions.\n\nYou can also explore our other services or take our AI readiness assessment.";
+          buttons = [
+            { id: 'specialist_call', text: 'Talk to Specialist', action: 'book_appointment' },
+            { id: 'back_services', text: 'Back to Services', action: 'show_services' },
+            { id: 'take_assessment', text: 'Take Assessment', action: 'start_assessment' }
+          ];
+        }
+        break;
     }
     
     // Handle assessment answers
