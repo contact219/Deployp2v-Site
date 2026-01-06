@@ -1,4 +1,4 @@
-import { users, contacts, newsletters, type User, type InsertUser, type Contact, type InsertContact, type Newsletter, type InsertNewsletter } from "@shared/schema";
+import { users, contacts, newsletters, files, type User, type InsertUser, type Contact, type InsertContact, type Newsletter, type InsertNewsletter, type FileRecord, type InsertFile } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 
@@ -11,6 +11,10 @@ export interface IStorage {
   deleteContact(id: number): Promise<boolean>;
   subscribeNewsletter(newsletter: InsertNewsletter): Promise<Newsletter>;
   getNewsletterSubscribers(): Promise<Newsletter[]>;
+  createFile(file: InsertFile): Promise<FileRecord>;
+  getFiles(): Promise<FileRecord[]>;
+  getFile(id: number): Promise<FileRecord | undefined>;
+  deleteFile(id: number): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -70,6 +74,28 @@ export class DatabaseStorage implements IStorage {
 
   async getNewsletterSubscribers(): Promise<Newsletter[]> {
     return await db.select().from(newsletters).where(eq(newsletters.isActive, true));
+  }
+
+  async createFile(insertFile: InsertFile): Promise<FileRecord> {
+    const [file] = await db
+      .insert(files)
+      .values(insertFile)
+      .returning();
+    return file;
+  }
+
+  async getFiles(): Promise<FileRecord[]> {
+    return await db.select().from(files);
+  }
+
+  async getFile(id: number): Promise<FileRecord | undefined> {
+    const [file] = await db.select().from(files).where(eq(files.id, id));
+    return file || undefined;
+  }
+
+  async deleteFile(id: number): Promise<boolean> {
+    const result = await db.delete(files).where(eq(files.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
   }
 }
 
