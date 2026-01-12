@@ -455,7 +455,7 @@ export default function Admin() {
                 </div>
               </div>
               <p className="text-gray-400 text-sm mt-2">
-                Supported formats: PDF, Images (JPG, PNG, GIF, WebP), Documents (DOC, DOCX, XLS, XLSX), Text files (TXT, CSV). Max size: 20MB
+                Supported formats: PDF, Images (JPG, PNG, GIF, WebP), Documents (DOC, DOCX, XLS, XLSX), Text files (TXT, CSV). Max size: 1GB
               </p>
             </div>
 

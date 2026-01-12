@@ -22,7 +22,7 @@ const ALLOWED_MIME_TYPES = [
   'text/plain',
   'text/csv'
 ];
-const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+const MAX_FILE_SIZE = 1024 * 1024 * 1024; // 1GB
 
 const uploadsDir = path.join(process.cwd(), 'uploads');
 if (!fs.existsSync(uploadsDir)) {
