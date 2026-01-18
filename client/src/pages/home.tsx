@@ -329,9 +329,9 @@ export default function Home() {
             <PricingCard
               type="Perfect for small businesses getting started with AI"
               name="Starter"
-              price="$299/mo"
+              price="$149/mo"
               features={[
-                "1 AI Solution Implementation",
+                "AI Receptionist or Lead Assistant - Live in 7 days",
                 "Basic customization & setup",
                 "Email support",
                 "Monthly performance reports"

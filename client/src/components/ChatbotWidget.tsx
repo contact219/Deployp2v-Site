@@ -77,7 +77,7 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
       "We create custom internal productivity applications for document processing and workflow automation."
     ],
     pricing: [
-      "Our Starter plan is $299/month and includes 1 AI solution implementation with basic customization and email support.",
+      "Our Starter plan is $149/month and includes an AI Receptionist or Lead Assistant - live in 7 days with basic customization and email support.",
       "The Professional plan at $599/month includes up to 3 AI solutions, advanced customization, and priority support.",
       "Our Enterprise plan offers unlimited AI solutions, dedicated support, and custom development - contact us for pricing.",
       "All our solutions are designed to pay for themselves through improved efficiency and cost savings."
@@ -286,7 +286,7 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
         break;
 
       case 'show_pricing_details':
-        response = "Our Transparent Pricing:\n\n🚀 STARTER - $299/month\n• 1 AI solution implementation\n• Basic customization\n• Email support\n• Monthly reports\n\n💼 PROFESSIONAL - $599/month\n• Up to 3 AI solutions\n• Advanced customization\n• Priority phone & email support\n• Weekly analytics\n• Integration support\n\n🏢 ENTERPRISE - Custom pricing\n• Unlimited AI solutions\n• Dedicated support manager\n• Custom development\n• On-site training\n\nAll plans include free consultation and setup. Most clients see ROI within 3-6 months.";
+        response = "Our Transparent Pricing:\n\n🚀 STARTER - $149/month\n• AI Receptionist or Lead Assistant - Live in 7 days\n• Basic customization\n• Email support\n• Monthly reports\n\n💼 PROFESSIONAL - $599/month\n• Up to 3 AI solutions\n• Advanced customization\n• Priority phone & email support\n• Weekly analytics\n• Integration support\n\n🏢 ENTERPRISE - Custom pricing\n• Unlimited AI solutions\n• Dedicated support manager\n• Custom development\n• On-site training\n\nAll plans include free consultation and setup. Most clients see ROI within 3-6 months.";
         buttons = [
           { id: 'book_pricing', text: 'Discuss Pricing', action: 'book_appointment' },
           { id: 'roi_details', text: 'Calculate My ROI', action: 'provide_roi_calculator' }
