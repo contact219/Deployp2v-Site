@@ -21,6 +21,12 @@ import { IndustryIndex } from "@/pages/industries/IndustryIndex";
 import { IndustryPage } from "@/pages/industries/IndustryPage";
 import { Contact } from "@/pages/Contact";
 
+// Analytics
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+
+// GA4 Measurement ID - set this in your environment or replace directly
+const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || "G-RTJ4NNJN7H";
+
 function Router() {
   return (
     <Switch>
@@ -47,6 +53,10 @@ function App() {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
+          {/* Google Analytics 4 - tracks page views automatically */}
+          {GA_MEASUREMENT_ID && (
+            <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />
+          )}
           <Toaster />
           <Router />
         </TooltipProvider>
