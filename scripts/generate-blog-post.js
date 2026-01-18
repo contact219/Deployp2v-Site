@@ -1,5 +1,9 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
@@ -17,23 +21,17 @@ const BLOG_TOPICS = [
 ];
 
 async function generateBlogPost() {
-  // Get existing blog posts to avoid duplicates
   const blogDir = path.join(__dirname, '../client/public/content/blog');
-  const existingPosts = fs.existsSync(blogDir) 
+  const existingPosts = fs.existsSync(blogDir)
     ? fs.readdirSync(blogDir).map(f => f.replace('.md', ''))
     : [];
 
-  // Filter out topics that might already exist (simple check)
   const availableTopics = BLOG_TOPICS.filter(topic => {
     const slug = topic.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 50);
     return !existingPosts.some(post => post.includes(slug.slice(0, 20)));
   });
 
-  if (availableTopics.length === 0) {
-    console.log('All predefined topics have been covered. Generating new topic...');
-  }
-
-  const topic = availableTopics[Math.floor(Math.random() * availableTopics.length)] 
+  const topic = availableTopics[Math.floor(Math.random() * availableTopics.length)]
     || 'AI Innovation Tips for Small Business Owners';
 
   console.log(`Generating blog post about: ${topic}`);
@@ -49,64 +47,75 @@ async function generateBlogPost() {
       messages: [
         {
           role: 'system',
-          content: `You are a content writer for DeployP2V, an AI services company helping small and medium businesses adopt AI solutions. Write engaging, practical blog posts that provide real value to local business owners. Focus on actionable advice and real-world examples. Keep the tone professional but approachable.`
+          content: `You are a content writer for DeployP2V, an AI automation company helping small businesses. Write engaging, SEO-optimized blog posts. Output ONLY valid markdown with YAML frontmatter.`
         },
         {
           role: 'user',
           content: `Write a blog post about: "${topic}"
 
-Format the response as markdown with:
-1. A compelling title (use # for h1)
-2. A brief intro paragraph
-3. 3-5 main sections with h2 headers (##)
-4. Practical tips or examples in each section
-5. A conclusion with a call-to-action mentioning DeployP2V
+Format:
+---
+title: "Title Here"
+slug: slug-here
+date: "${new Date().toISOString().split('T')[0]}"
+author: "DeployP2V Team"
+description: "Meta description here (150-160 chars)"
+keywords:
+  - keyword1
+  - keyword2
+---
 
-Keep it around 800-1000 words. Make it SEO-friendly with natural keyword usage.`
+# Main content here with proper markdown formatting
+
+Include:
+- Engaging introduction
+- 3-5 main sections with headers
+- Practical tips and examples
+- Call to action mentioning DeployP2V`
         }
       ],
-      max_tokens: 2000,
-      temperature: 0.7
+      temperature: 0.7,
+      max_tokens: 2000
     })
   });
 
   const data = await response.json();
-  
-  if (!data.choices || !data.choices[0]) {
-    console.error('Failed to generate content:', data);
-    process.exit(1);
-  }
-
   const content = data.choices[0].message.content;
-  
-  // Generate slug from topic
-  const date = new Date().toISOString().split('T')[0];
-  const slug = topic.toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
-    .slice(0, 50);
-  
-  const filename = `${slug}.md`;
-  const filepath = path.join(blogDir, filename);
+
+  // Extract slug from content
+  const slugMatch = content.match(/slug:\s*([\w-]+)/);
+  const slug = slugMatch ? slugMatch[1] : `blog-post-${Date.now()}`;
 
   // Ensure directory exists
   if (!fs.existsSync(blogDir)) {
     fs.mkdirSync(blogDir, { recursive: true });
   }
 
-  // Add frontmatter
-  const frontmatter = `---
-title: "${topic}"
-date: "${date}"
-author: "DeployP2V Team"
-description: "Learn about ${topic.toLowerCase()} and how AI can transform your small business operations."
-keywords: ["AI", "small business", "automation", "DeployP2V"]
----
+  // Write file
+  const filePath = path.join(blogDir, `${slug}.md`);
+  fs.writeFileSync(filePath, content);
+  console.log(`Blog post saved to: ${filePath}`);
 
-`;
+  // Update content.ts with new file
+  updateContentLoader('blog', `${slug}.md`);
+}
 
-  fs.writeFileSync(filepath, frontmatter + content);
-  console.log(`Blog post created: ${filepath}`);
+function updateContentLoader(type, filename) {
+  const contentPath = path.join(__dirname, '../client/src/lib/content.ts');
+  let content = fs.readFileSync(contentPath, 'utf-8');
+
+  const arrayName = type === 'blog' ? 'BLOG_FILES' : 'INDUSTRY_FILES';
+  const regex = new RegExp(`(const ${arrayName} = \\[)([^\\]]*)(\\])`);
+
+  content = content.replace(regex, (match, start, items, end) => {
+    if (items.includes(filename)) return match;
+    const newItems = items.trimEnd();
+    const comma = newItems.endsWith(',') || newItems.trim() === '' ? '' : ',';
+    return `${start}${newItems}${comma}\n  '${filename}',${end}`;
+  });
+
+  fs.writeFileSync(contentPath, content);
+  console.log(`Updated content.ts with ${filename}`);
 }
 
 generateBlogPost().catch(console.error);

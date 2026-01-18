@@ -1,39 +1,43 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
-const INDUSTRIES = [
-  { name: 'Dental Practices', slug: 'dental' },
-  { name: 'Law Firms', slug: 'law-firms' },
-  { name: 'Accounting Firms', slug: 'accounting' },
-  { name: 'Pet Services', slug: 'pet-services' },
-  { name: 'Home Services', slug: 'home-services' },
-  { name: 'Photography Studios', slug: 'photography' },
-  { name: 'Event Planning', slug: 'event-planning' },
-  { name: 'Landscaping', slug: 'landscaping' },
-  { name: 'Auto Repair Shops', slug: 'auto-repair' },
-  { name: 'Bakeries', slug: 'bakeries' }
+const POTENTIAL_INDUSTRIES = [
+  'Legal Services',
+  'Accounting & Tax',
+  'Home Services',
+  'Pet Services',
+  'Education & Tutoring',
+  'Event Planning',
+  'Photography',
+  'Cleaning Services',
+  'Landscaping',
+  'Food Trucks'
 ];
 
 async function generateIndustryPage() {
   const industryDir = path.join(__dirname, '../client/public/content/industries');
-  
-  // Get existing industry pages
   const existingPages = fs.existsSync(industryDir)
     ? fs.readdirSync(industryDir).map(f => f.replace('.md', ''))
     : [];
 
-  // Find industries not yet covered
-  const availableIndustries = INDUSTRIES.filter(ind => !existingPages.includes(ind.slug));
+  const availableIndustries = POTENTIAL_INDUSTRIES.filter(industry => {
+    const slug = industry.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    return !existingPages.includes(slug);
+  });
 
   if (availableIndustries.length === 0) {
-    console.log('All predefined industries have been covered.');
+    console.log('All predefined industries have pages. Skipping generation.');
     return;
   }
 
   const industry = availableIndustries[Math.floor(Math.random() * availableIndustries.length)];
-  console.log(`Generating industry page for: ${industry.name}`);
+  console.log(`Generating industry page for: ${industry}`);
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -46,55 +50,71 @@ async function generateIndustryPage() {
       messages: [
         {
           role: 'system',
-          content: `You are a content writer for DeployP2V, an AI services company helping small and medium businesses adopt AI solutions. Write compelling industry-specific landing pages that speak directly to business owners in that industry.`
+          content: `You are a content writer for DeployP2V, an AI automation company. Create compelling industry landing pages. Output ONLY valid markdown with YAML frontmatter.`
         },
         {
           role: 'user',
-          content: `Write a landing page for ${industry.name} businesses.
+          content: `Write an industry landing page for: "${industry}"
 
-Format as markdown with:
-1. A compelling headline (# h1) that speaks to their pain points
-2. A brief intro about challenges in their industry
-3. "How AI Can Help" section with 4-5 specific use cases
-4. "Benefits" section with bullet points
-5. "Why DeployP2V" section
-6. A strong call-to-action
+Format:
+---
+title: "AI Solutions for ${industry}"
+slug: ${industry.toLowerCase().replace(/[^a-z0-9]+/g, '-')}
+description: "Description here (150-160 chars)"
+keywords:
+  - keyword1
+  - keyword2
+hero: "Catchy hero tagline"
+---
 
-Make it specific to ${industry.name} with real examples and pain points they face. Around 600-800 words.`
+# Content with proper markdown
+
+Include:
+- Industry-specific pain points
+- How AI/automation helps
+- Specific use cases (3-5)
+- Benefits and ROI
+- Call to action for DeployP2V`
         }
       ],
-      max_tokens: 1500,
-      temperature: 0.7
+      temperature: 0.7,
+      max_tokens: 2000
     })
   });
 
   const data = await response.json();
-  
-  if (!data.choices || !data.choices[0]) {
-    console.error('Failed to generate content:', data);
-    process.exit(1);
-  }
-
   const content = data.choices[0].message.content;
-  const filepath = path.join(industryDir, `${industry.slug}.md`);
+
+  const slugMatch = content.match(/slug:\s*([\w-]+)/);
+  const slug = slugMatch ? slugMatch[1] : industry.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
   if (!fs.existsSync(industryDir)) {
     fs.mkdirSync(industryDir, { recursive: true });
   }
 
-  // Add frontmatter
-  const frontmatter = `---
-title: "AI Solutions for ${industry.name}"
-industry: "${industry.name}"
-slug: "${industry.slug}"
-description: "Discover how DeployP2V helps ${industry.name.toLowerCase()} leverage AI to streamline operations and grow their business."
-keywords: ["AI", "${industry.name}", "automation", "small business"]
----
+  const filePath = path.join(industryDir, `${slug}.md`);
+  fs.writeFileSync(filePath, content);
+  console.log(`Industry page saved to: ${filePath}`);
 
-`;
+  updateContentLoader('industry', `${slug}.md`);
+}
 
-  fs.writeFileSync(filepath, frontmatter + content);
-  console.log(`Industry page created: ${filepath}`);
+function updateContentLoader(type, filename) {
+  const contentPath = path.join(__dirname, '../client/src/lib/content.ts');
+  let content = fs.readFileSync(contentPath, 'utf-8');
+
+  const arrayName = type === 'blog' ? 'BLOG_FILES' : 'INDUSTRY_FILES';
+  const regex = new RegExp(`(const ${arrayName} = \\[)([^\\]]*)(\\])`);
+
+  content = content.replace(regex, (match, start, items, end) => {
+    if (items.includes(filename)) return match;
+    const newItems = items.trimEnd();
+    const comma = newItems.endsWith(',') || newItems.trim() === '' ? '' : ',';
+    return `${start}${newItems}${comma}\n  '${filename}',${end}`;
+  });
+
+  fs.writeFileSync(contentPath, content);
+  console.log(`Updated content.ts with ${filename}`);
 }
 
 generateIndustryPage().catch(console.error);
