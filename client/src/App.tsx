@@ -3,17 +3,23 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { HelmetProvider } from "react-helmet-async";
 import Home from "@/pages/home";
 import PrivacyPolicy from "@/pages/privacy-policy";
 import TermsOfService from "@/pages/terms-of-service";
 import Admin from "@/pages/admin";
 import FAQ from "@/pages/faq";
 import CaseStudies from "@/pages/case-studies";
-import Blog from "@/pages/blog";
-import BlogPost from "@/pages/blog-post";
 import ROICalculator from "@/pages/roi-calculator";
 import Resources from "@/pages/resources";
 import NotFound from "@/pages/not-found";
+
+// New markdown-based pages
+import { BlogIndex } from "@/pages/blog/BlogIndex";
+import { BlogPost } from "@/pages/blog/BlogPost";
+import { IndustryIndex } from "@/pages/industries/IndustryIndex";
+import { IndustryPage } from "@/pages/industries/IndustryPage";
+import { Contact } from "@/pages/Contact";
 
 function Router() {
   return (
@@ -22,8 +28,11 @@ function Router() {
       <Route path="/admin" component={Admin} />
       <Route path="/faq" component={FAQ} />
       <Route path="/case-studies" component={CaseStudies} />
-      <Route path="/blog" component={Blog} />
-      <Route path="/blog/:id" component={BlogPost} />
+      <Route path="/blog" component={BlogIndex} />
+      <Route path="/blog/:slug" component={BlogPost} />
+      <Route path="/industries" component={IndustryIndex} />
+      <Route path="/industries/:slug" component={IndustryPage} />
+      <Route path="/contact" component={Contact} />
       <Route path="/roi-calculator" component={ROICalculator} />
       <Route path="/resources" component={Resources} />
       <Route path="/privacy-policy" component={PrivacyPolicy} />
@@ -35,12 +44,14 @@ function Router() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 }
 
