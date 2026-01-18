@@ -1,5 +1,3 @@
-import matter from 'gray-matter';
-
 export interface BlogPost {
   slug: string;
   title: string;
@@ -19,7 +17,74 @@ export interface IndustryPage {
   content: string;
 }
 
-// List of blog posts (we need to know the filenames)
+// Simple frontmatter parser for browser
+function parseFrontmatter(text: string): { data: Record<string, any>; content: string } {
+  const lines = text.split('\n');
+  
+  if (lines[0].trim() !== '---') {
+    return { data: {}, content: text };
+  }
+  
+  let endIndex = -1;
+  for (let i = 1; i < lines.length; i++) {
+    if (lines[i].trim() === '---') {
+      endIndex = i;
+      break;
+    }
+  }
+  
+  if (endIndex === -1) {
+    return { data: {}, content: text };
+  }
+  
+  const frontmatterLines = lines.slice(1, endIndex);
+  const content = lines.slice(endIndex + 1).join('\n').trim();
+  
+  const data: Record<string, any> = {};
+  let currentKey = '';
+  let inArray = false;
+  let arrayValues: string[] = [];
+  
+  for (const line of frontmatterLines) {
+    // Check for array item
+    if (line.match(/^\s+-\s+/)) {
+      const value = line.replace(/^\s+-\s+/, '').trim().replace(/^["']|["']$/g, '');
+      arrayValues.push(value);
+      continue;
+    }
+    
+    // Save previous array if we were in one
+    if (inArray && currentKey) {
+      data[currentKey] = arrayValues;
+      arrayValues = [];
+      inArray = false;
+    }
+    
+    // Check for key: value
+    const match = line.match(/^([\w]+):\s*(.*)$/);
+    if (match) {
+      currentKey = match[1];
+      const value = match[2].trim().replace(/^["']|["']$/g, '');
+      
+      if (value === '') {
+        // This might be an array
+        inArray = true;
+        arrayValues = [];
+      } else {
+        data[currentKey] = value;
+      }
+    }
+  }
+  
+  // Save final array if we were in one
+  if (inArray && currentKey) {
+    data[currentKey] = arrayValues;
+  }
+  
+  return { data, content };
+}
+
+// List of blog posts
 const BLOG_FILES = [
   'ai-automation-small-business-2026.md',
   'chatbots-customer-service-roi.md',
@@ -45,13 +110,13 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
       const response = await fetch(`/content/blog/${file}`);
       if (!response.ok) continue;
       const text = await response.text();
-      const { data, content: markdown } = matter(text);
+      const { data, content: markdown } = parseFrontmatter(text);
       posts.push({
-        slug: data.slug,
-        title: data.title,
-        date: data.date,
-        author: data.author,
-        description: data.description,
+        slug: data.slug || file.replace('.md', ''),
+        title: data.title || 'Untitled',
+        date: data.date || '',
+        author: data.author || 'DeployP2V Team',
+        description: data.description || '',
         keywords: data.keywords || [],
         content: markdown,
       });
@@ -76,13 +141,13 @@ export async function getIndustryPages(): Promise<IndustryPage[]> {
       const response = await fetch(`/content/industries/${file}`);
       if (!response.ok) continue;
       const text = await response.text();
-      const { data, content: markdown } = matter(text);
+      const { data, content: markdown } = parseFrontmatter(text);
       pages.push({
-        slug: data.slug,
-        title: data.title,
-        description: data.description,
+        slug: data.slug || file.replace('.md', ''),
+        title: data.title || 'Untitled',
+        description: data.description || '',
         keywords: data.keywords || [],
-        hero: data.hero,
+        hero: data.hero || '',
         content: markdown,
       });
     } catch (e) {
