@@ -25,7 +25,7 @@ import { Contact } from "@/pages/Contact";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 
 // GA4 Measurement ID - set this in your environment or replace directly
-const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || "G-XXXXXXXXXX";
+const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || "G-RTJ4NNJN7H";
 
 function Router() {
   return (
@@ -54,7 +54,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           {/* Google Analytics 4 - tracks page views automatically */}
-          {GA_MEASUREMENT_ID && GA_MEASUREMENT_ID !== "G-XXXXXXXXXX" && (
+          {GA_MEASUREMENT_ID && (
             <GoogleAnalytics measurementId={GA_MEASUREMENT_ID} />
           )}
           <Toaster />
