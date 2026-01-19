@@ -79,7 +79,7 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
     pricing: [
       "Our Starter plan is $149/month and includes an AI Receptionist or Lead Assistant - live in 7 days with basic customization and email support.",
       "The Professional plan at $499/month includes everything in Starter plus up to 3 AI Agents, advanced customization & workflows, integrations, and priority support.",
-      "Our Enterprise plan offers unlimited AI solutions, dedicated support, and custom development - contact us for pricing.",
+      "Our Enterprise plan offers unlimited AI agents, fully custom AI development, dedicated account manager, 24/7 priority support, and security/compliance/SLA options - contact us for custom pricing.",
       "All our solutions are designed to pay for themselves through improved efficiency and cost savings."
     ],
     benefits: [
@@ -286,7 +286,7 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
         break;
 
       case 'show_pricing_details':
-        response = "Our Transparent Pricing:\n\n🚀 STARTER - $149/month\n• AI Receptionist or Lead Assistant - Live in 7 days\n• Basic customization\n• Email support\n• Monthly reports\n\n💼 PROFESSIONAL - $499/month\n• Everything in Starter, plus:\n• Up to 3 AI Agents\n• Advanced customization & workflows\n• CRM, calendar, email, or website integrations\n• Weekly analytics & insights\n• Priority phone & email support\n\n🏢 ENTERPRISE - Custom pricing\n• Unlimited AI solutions\n• Dedicated support manager\n• Custom development\n• On-site training\n\nAll plans include free consultation and setup. Most clients see ROI within 3-6 months.";
+        response = "Our Transparent Pricing:\n\n🚀 STARTER - $149/month\n• AI Receptionist or Lead Assistant - Live in 7 days\n• Basic customization\n• Email support\n• Monthly reports\n\n💼 PROFESSIONAL - $499/month\n• Everything in Starter, plus:\n• Up to 3 AI Agents\n• Advanced customization & workflows\n• CRM, calendar, email, or website integrations\n• Weekly analytics & insights\n• Priority phone & email support\n\n🏢 ENTERPRISE - Custom pricing\n• Unlimited AI agents\n• Fully custom AI development\n• Dedicated account manager\n• 24/7 priority support\n• Real-time analytics dashboard\n• Security, compliance & SLA options\n• Best for: Enterprises, franchises, internal AI systems\n\nAll plans include free consultation and setup. Most clients see ROI within 3-6 months.";
         buttons = [
           { id: 'book_pricing', text: 'Discuss Pricing', action: 'book_appointment' },
           { id: 'roi_details', text: 'Calculate My ROI', action: 'provide_roi_calculator' }

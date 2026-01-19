@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     question: "What's the difference between your pricing plans?",
-    answer: "Our Starter plan ($149/mo) includes an AI Receptionist or Lead Assistant live in 7 days with basic customization, perfect for businesses new to AI. The Professional plan ($499/mo) includes everything in Starter plus up to 3 AI Agents, advanced customization & workflows, CRM/calendar/email/website integrations, and priority support. Enterprise plans are custom-priced and include unlimited solutions with dedicated support for established businesses with complex needs."
+    answer: "Our Starter plan ($149/mo) includes an AI Receptionist or Lead Assistant live in 7 days with basic customization, perfect for businesses new to AI. The Professional plan ($499/mo) includes everything in Starter plus up to 3 AI Agents, advanced customization & workflows, CRM/calendar/email/website integrations, and priority support. Enterprise plans are custom-priced and include unlimited AI agents, fully custom development, dedicated account manager, 24/7 priority support, and security/compliance/SLA options - ideal for enterprises, franchises, and internal AI systems."
   },
   {
     question: "How do you ensure my business data is secure?",

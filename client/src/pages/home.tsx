@@ -354,15 +354,17 @@ export default function Home() {
               onContactClick={() => scrollToSection('contact')}
             />
             <PricingCard
-              type="For established businesses with complex AI needs"
+              type="Custom AI systems for established businesses with complex needs"
               name="Enterprise"
               price="Custom"
               features={[
-                "Unlimited AI Solutions",
-                "Fully custom development",
+                "Unlimited AI agents",
+                "Fully custom AI development",
                 "Dedicated account manager",
-                "24/7 phone support",
-                "Real-time analytics dashboard"
+                "24/7 priority support",
+                "Real-time analytics dashboard",
+                "Security, compliance & SLA options",
+                "Best for: Enterprises, franchises, internal AI systems"
               ]}
               onContactClick={() => scrollToSection('contact')}
             />
