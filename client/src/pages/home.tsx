@@ -339,15 +339,16 @@ export default function Home() {
               onContactClick={() => scrollToSection('contact')}
             />
             <PricingCard
-              type="Ideal for growing businesses ready to scale with AI"
+              type="For growing businesses ready to scale with AI automation"
               name="Professional"
-              price="$599/mo"
+              price="$499/mo"
               features={[
-                "Up to 3 AI Solutions",
-                "Advanced customization",
-                "Priority phone & email support",
+                "Everything in Starter, plus:",
+                "Up to 3 AI Agents",
+                "Advanced customization & workflows",
+                "CRM, calendar, email, or website integrations",
                 "Weekly analytics & insights",
-                "Integration support"
+                "Priority phone & email support"
               ]}
               isFeatured
               onContactClick={() => scrollToSection('contact')}
