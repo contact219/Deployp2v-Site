@@ -244,10 +244,10 @@ export default function Home() {
       <section id="hero" className="gradient-bg text-white py-12 sm:py-16 md:py-24 lg:py-32 text-center rounded-b-3xl shadow-xl">
         <div className={`${commonClasses.container} max-w-4xl`}>
           <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-4 sm:mb-6 px-2">
-            DeployP2V: Deploying Practical Vision with AI for Your Small Business
+            Turn AI Into a Real Employee for Your Business
           </h1>
           <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 md:mb-10 opacity-90 px-4 leading-relaxed">
-            Unlock growth, enhance efficiency, and innovate with tailored Artificial Intelligence solutions designed specifically for small businesses.
+            From AI receptionists to automated follow-ups, DeployP2V builds and manages AI agents that save time and increase revenue — without complexity.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 px-4 max-w-lg sm:max-w-none mx-auto">
             <Button 
@@ -262,6 +262,42 @@ export default function Home() {
             >
               Explore Our Solutions
             </Button>
+          </div>
+          
+          {/* What DeployP2V Can Do */}
+          <div className="mt-12 sm:mt-16 bg-white/10 backdrop-blur-sm rounded-2xl p-6 sm:p-8 max-w-3xl mx-auto">
+            <h2 className="text-xl sm:text-2xl font-bold mb-6 text-white">What DeployP2V Can Do for You</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">🤖</span>
+                <div>
+                  <span className="font-semibold">AI Receptionist</span>
+                  <span className="text-white/80"> – answers questions, books appointments, captures leads</span>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">💬</span>
+                <div>
+                  <span className="font-semibold">Website Chat Agent</span>
+                  <span className="text-white/80"> – converts visitors into customers 24/7</span>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">📩</span>
+                <div>
+                  <span className="font-semibold">AI Follow-Up Assistant</span>
+                  <span className="text-white/80"> – emails & texts leads automatically</span>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">📊</span>
+                <div>
+                  <span className="font-semibold">AI Business Insights</span>
+                  <span className="text-white/80"> – summaries, reports, and analytics</span>
+                </div>
+              </div>
+            </div>
+            <p className="mt-6 text-white/90 font-medium">Most solutions go live in 5–7 business days.</p>
           </div>
         </div>
       </section>
