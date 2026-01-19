@@ -30,7 +30,8 @@ import {
   Settings,
   Heart,
   Menu,
-  X
+  X,
+  Rocket
 } from 'lucide-react';
 
 // SVG Logo Component
@@ -298,6 +299,57 @@ export default function Home() {
               </div>
             </div>
             <p className="mt-6 text-white/90 font-medium">Most solutions go live in 5–7 business days.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section id="how-it-works" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gray-800">
+        <div className={commonClasses.container}>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-3 sm:mb-4 text-white">How It Works</h2>
+          <p className="text-base sm:text-lg md:text-xl text-center mb-10 sm:mb-12 md:mb-16 text-gray-300 px-4">Getting started with AI is simple</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {/* Step 1 */}
+            <div className="relative text-center">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                <Phone className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
+              </div>
+              <div className="absolute top-8 sm:top-10 left-1/2 ml-16 sm:ml-20 hidden md:block w-full h-0.5 bg-gradient-to-r from-indigo-500 to-transparent" style={{maxWidth: 'calc(100% - 2rem)'}}></div>
+              <span className="inline-block bg-indigo-600 text-white text-sm font-bold px-3 py-1 rounded-full mb-3">Step 1</span>
+              <h3 className="text-xl sm:text-2xl font-bold text-white mb-3">Free AI Fit Call</h3>
+              <p className="text-gray-300 leading-relaxed">We identify the best automation opportunities for your business during a no-obligation consultation.</p>
+            </div>
+
+            {/* Step 2 */}
+            <div className="relative text-center">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                <Settings className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
+              </div>
+              <div className="absolute top-8 sm:top-10 left-1/2 ml-16 sm:ml-20 hidden md:block w-full h-0.5 bg-gradient-to-r from-indigo-500 to-transparent" style={{maxWidth: 'calc(100% - 2rem)'}}></div>
+              <span className="inline-block bg-indigo-600 text-white text-sm font-bold px-3 py-1 rounded-full mb-3">Step 2</span>
+              <h3 className="text-xl sm:text-2xl font-bold text-white mb-3">Done-For-You Setup</h3>
+              <p className="text-gray-300 leading-relaxed">We build and integrate your AI agent with your existing tools and workflows — no technical work required from you.</p>
+            </div>
+
+            {/* Step 3 */}
+            <div className="relative text-center">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                <Rocket className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
+              </div>
+              <span className="inline-block bg-indigo-600 text-white text-sm font-bold px-3 py-1 rounded-full mb-3">Step 3</span>
+              <h3 className="text-xl sm:text-2xl font-bold text-white mb-3">Go Live in Days</h3>
+              <p className="text-gray-300 leading-relaxed">Your AI goes live, we monitor performance, and help you scale as your business grows.</p>
+            </div>
+          </div>
+
+          <div className="text-center mt-10 sm:mt-12">
+            <Button 
+              onClick={() => scrollToSection('contact')} 
+              className={`${commonClasses.btnPrimary} py-3 px-8 text-base font-semibold touch-manipulation`}
+            >
+              Schedule Your Free AI Fit Call
+            </Button>
           </div>
         </div>
       </section>
