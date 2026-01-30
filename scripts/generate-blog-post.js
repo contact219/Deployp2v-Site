@@ -80,6 +80,18 @@ Include:
   });
 
   const data = await response.json();
+  
+  // Check for API errors
+  if (!response.ok) {
+    console.error('OpenAI API Error:', data.error?.message || JSON.stringify(data));
+    process.exit(1);
+  }
+  
+  if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+    console.error('Unexpected API response:', JSON.stringify(data, null, 2));
+    process.exit(1);
+  }
+  
   const content = data.choices[0].message.content;
 
   // Extract slug from content
