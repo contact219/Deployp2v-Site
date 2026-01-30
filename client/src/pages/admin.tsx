@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -56,6 +56,15 @@ export default function Admin() {
 
   const adminPassword = 'deployp2v2024';
 
+  // Restore authentication from localStorage on mount
+  useEffect(() => {
+    const savedToken = localStorage.getItem('adminToken');
+    if (savedToken === adminPassword) {
+      setIsAuthenticated(true);
+      setAdminToken(savedToken);
+    }
+  }, []);
+
   const handleLogin = () => {
     if (password === adminPassword) {
       setIsAuthenticated(true);
@@ -86,13 +95,31 @@ export default function Admin() {
   };
 
   const { data: contacts, isLoading, error } = useQuery<{ success: boolean; contacts: Contact[] }>({
-    queryKey: ['/api/contacts'],
-    enabled: isAuthenticated,
+    queryKey: ['/api/contacts', adminToken],
+    enabled: isAuthenticated && !!adminToken,
+    queryFn: async () => {
+      const token = localStorage.getItem('adminToken') || adminToken;
+      const response = await fetch('/api/contacts', {
+        headers: { 'x-admin-token': token }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch contacts');
+      }
+      return response.json();
+    }
   });
 
   const deleteContactMutation = useMutation({
     mutationFn: async (contactId: number) => {
-      return await apiRequest('DELETE', `/api/contacts/${contactId}`);
+      const token = localStorage.getItem('adminToken') || adminToken;
+      const response = await fetch(`/api/contacts/${contactId}`, {
+        method: 'DELETE',
+        headers: { 'x-admin-token': token }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete contact');
+      }
+      return response.json();
     },
     onSuccess: () => {
       queryClientLocal.invalidateQueries({ queryKey: ['/api/contacts'] });
