@@ -88,7 +88,8 @@ function parseFrontmatter(text: string): { data: Record<string, any>; content: s
 const BLOG_FILES = [
   'ai-automation-small-business-2026.md',
   'chatbots-customer-service-roi.md',
-  'roi-of-automation-local-business.md',];
+  'roi-of-automation-local-business.md',
+  'ai-reduce-food-waste-restaurant.md',];
 
 // List of industry pages
 const INDUSTRY_FILES = [
