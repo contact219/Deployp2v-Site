@@ -8,6 +8,7 @@ import Home from "@/pages/home";
 import PrivacyPolicy from "@/pages/privacy-policy";
 import TermsOfService from "@/pages/terms-of-service";
 import Admin from "@/pages/admin";
+import CRM from "@/pages/crm";
 import FAQ from "@/pages/faq";
 import CaseStudies from "@/pages/case-studies";
 import ROICalculator from "@/pages/roi-calculator";
@@ -32,6 +33,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/admin" component={Admin} />
+      <Route path="/admin/crm" component={CRM} />
       <Route path="/faq" component={FAQ} />
       <Route path="/case-studies" component={CaseStudies} />
       <Route path="/blog" component={BlogIndex} />

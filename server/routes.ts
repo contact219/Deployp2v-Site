@@ -85,7 +85,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all contacts (for admin purposes)
-  app.get("/api/contacts", async (req, res) => {
+  app.get("/api/contacts", verifyAdmin, async (req, res) => {
     try {
       const contacts = await storage.getContacts();
       res.json({ success: true, contacts });
@@ -133,7 +133,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete contact endpoint
-  app.delete("/api/contacts/:id", async (req, res) => {
+  app.delete("/api/contacts/:id", verifyAdmin, async (req, res) => {
     try {
       const contactId = parseInt(req.params.id);
       if (isNaN(contactId)) {

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLocation } from 'wouter';
-import { ArrowLeft, Mail, Phone, Building, Calendar, MessageSquare, Trash2, Eye, EyeOff, LogOut, Upload, Download, FileText, Image, File, FolderOpen } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, Building, Calendar, MessageSquare, Trash2, Eye, EyeOff, LogOut, Upload, Download, FileText, Image, File, FolderOpen, Brain } from 'lucide-react';
 import { format } from 'date-fns';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
@@ -60,6 +60,7 @@ export default function Admin() {
     if (password === adminPassword) {
       setIsAuthenticated(true);
       setAdminToken(password);
+      localStorage.setItem('adminToken', password);
       toast({
         title: "Login Successful",
         description: "Welcome to the admin dashboard",
@@ -77,6 +78,7 @@ export default function Admin() {
     setIsAuthenticated(false);
     setPassword('');
     setAdminToken('');
+    localStorage.removeItem('adminToken');
     toast({
       title: "Logged Out",
       description: "You have been logged out successfully",
@@ -319,6 +321,15 @@ export default function Admin() {
             <Badge variant="secondary" className="bg-indigo-600">
               {contactList.length} Total Contacts
             </Badge>
+            <Button 
+              onClick={() => setLocation('/admin/crm')}
+              variant="outline"
+              size="sm"
+              className="text-indigo-400 border-indigo-600 hover:bg-indigo-600 hover:text-white"
+            >
+              <Brain className="w-4 h-4 mr-2" />
+              AI CRM
+            </Button>
             <Button 
               onClick={handleLogout}
               variant="outline"
