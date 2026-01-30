@@ -32,9 +32,31 @@ The server provides endpoints for contact form submissions, newsletter subscript
 - **Database**: PostgreSQL via Neon serverless
 - **ORM**: Drizzle ORM with type-safe schema definitions
 - **Schema Location**: `shared/schema.ts` contains all table definitions
-- **Tables**: users, contacts, newsletters, files
+- **Tables**: users, contacts, newsletters, files, leads, deals, activities, tasks, communications
 
 The database schema uses Drizzle with Zod for validation. Insert schemas are generated from table definitions for type-safe form handling.
+
+### AI-Powered CRM System
+The platform includes a comprehensive CRM system accessible at `/admin/crm` (requires admin login):
+
+**Features:**
+- **Lead Management**: Create, enrich, and manage leads with AI-powered analysis
+- **Deal Pipeline**: Visual Kanban-style pipeline with stages (lead, qualified, proposal, negotiation, won, lost)
+- **Activity Tracking**: Automatic logging of all CRM activities (emails, calls, meetings, stage changes)
+- **Task Management**: AI-generated follow-up tasks with priority and due dates
+- **Communications Log**: Track all inbound/outbound communications per lead
+- **Contact Conversion**: Convert website contact submissions to CRM leads with one click
+
+**AI Capabilities (OpenAI GPT-4o-mini):**
+- Lead enrichment with industry, company size, budget, urgency, pain points, and scoring
+- Automatic follow-up task generation based on lead context
+- AI-drafted emails for follow-ups
+- Deal analysis with win probability and risk flags
+
+**Security:**
+- All CRM endpoints protected by admin authentication (`verifyAdmin` middleware)
+- Admin token stored in localStorage after login
+- All CRM API requests include `x-admin-token` header
 
 ### Authentication
 - **Admin Access**: Simple password-based authentication (hardcoded password in routes)
@@ -54,6 +76,7 @@ The database schema uses Drizzle with Zod for validation. Insert schemas are gen
 
 ### AI Integration
 - **Anthropic SDK** (`@anthropic-ai/sdk`): Claude AI integration for chatbot functionality
+- **OpenAI SDK** (`openai`): GPT-4o-mini for CRM lead enrichment, task generation, email drafting, and deal analysis
 
 ### Email Services
 - **SendGrid** (`@sendgrid/mail`): Email delivery for contact form notifications and newsletters
