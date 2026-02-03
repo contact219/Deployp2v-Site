@@ -89,7 +89,8 @@ const BLOG_FILES = [
   'ai-automation-small-business-2026.md',
   'chatbots-customer-service-roi.md',
   'roi-of-automation-local-business.md',
-  'ai-reduce-food-waste-restaurant.md',];
+  'ai-reduce-food-waste-restaurant.md',
+  'automating-appointment-scheduling.md',];
 
 // List of industry pages
 const INDUSTRY_FILES = [
