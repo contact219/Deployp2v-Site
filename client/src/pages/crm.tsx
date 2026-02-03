@@ -62,7 +62,11 @@ export default function CRM() {
   const [isLeadDialogOpen, setIsLeadDialogOpen] = useState(false);
   const [isDealDialogOpen, setIsDealDialogOpen] = useState(false);
   const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
+  const [isEditLeadDialogOpen, setIsEditLeadDialogOpen] = useState(false);
   const [emailDraft, setEmailDraft] = useState({ subject: "", body: "" });
+  const [editLead, setEditLead] = useState<{ id: number; name: string; email: string; phone: string; company: string; status: string; industry: string; notes: string }>({
+    id: 0, name: "", email: "", phone: "", company: "", status: "new", industry: "", notes: ""
+  });
 
   const adminToken = localStorage.getItem('adminToken');
   
@@ -187,6 +191,23 @@ export default function CRM() {
       queryClient.invalidateQueries({ queryKey: ["/api/crm/stats"] });
       queryClient.invalidateQueries({ queryKey: ["/api/contacts"] });
       toast({ title: "Contact converted to lead with AI enrichment" });
+    }
+  });
+
+  const updateLeadMutation = useMutation({
+    mutationFn: async (data: { id: number; name?: string; email?: string; phone?: string; company?: string; status?: string; industry?: string; notes?: string }) => {
+      const { id, ...updates } = data;
+      const res = await adminApiRequest("PATCH", `/api/crm/leads/${id}`, updates);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/leads"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/stats"] });
+      setIsEditLeadDialogOpen(false);
+      toast({ title: "Lead updated successfully" });
+    },
+    onError: () => {
+      toast({ title: "Failed to update lead", variant: "destructive" });
     }
   });
 
@@ -530,7 +551,7 @@ export default function CRM() {
                         {lead.tags && (
                           <div className="flex gap-2 flex-wrap">
                             {JSON.parse(lead.tags as string || "[]").map((tag: string, i: number) => (
-                              <Badge key={i} variant="secondary" className="text-xs bg-gray-800">
+                              <Badge key={i} variant="secondary" className="text-xs bg-gray-700 text-gray-200">
                                 {tag}
                               </Badge>
                             ))}
@@ -539,6 +560,25 @@ export default function CRM() {
                       </div>
 
                       <div className="flex flex-col gap-2 ml-4">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setEditLead({
+                              id: lead.id,
+                              name: lead.name || "",
+                              email: lead.email || "",
+                              phone: lead.phone || "",
+                              company: lead.company || "",
+                              status: lead.status || "new",
+                              industry: lead.industry || "",
+                              notes: lead.originalMessage || ""
+                            });
+                            setIsEditLeadDialogOpen(true);
+                          }}
+                        >
+                          <Edit className="h-4 w-4 mr-1" /> Edit
+                        </Button>
                         <Button
                           size="sm"
                           variant="outline"
@@ -940,6 +980,91 @@ export default function CRM() {
               >
                 <Send className="h-4 w-4 mr-2" />
                 Copy to Clipboard
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Lead Dialog */}
+        <Dialog open={isEditLeadDialogOpen} onOpenChange={setIsEditLeadDialogOpen}>
+          <DialogContent className="bg-gray-900 border-gray-800">
+            <DialogHeader>
+              <DialogTitle className="text-white">Edit Lead</DialogTitle>
+              <DialogDescription className="text-gray-400">Update lead information.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  placeholder="Name *"
+                  value={editLead.name}
+                  onChange={(e) => setEditLead({ ...editLead, name: e.target.value })}
+                  className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400"
+                />
+                <Input
+                  placeholder="Email *"
+                  type="email"
+                  value={editLead.email}
+                  onChange={(e) => setEditLead({ ...editLead, email: e.target.value })}
+                  className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  placeholder="Phone"
+                  value={editLead.phone}
+                  onChange={(e) => setEditLead({ ...editLead, phone: e.target.value })}
+                  className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400"
+                />
+                <Input
+                  placeholder="Company"
+                  value={editLead.company}
+                  onChange={(e) => setEditLead({ ...editLead, company: e.target.value })}
+                  className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  placeholder="Industry"
+                  value={editLead.industry}
+                  onChange={(e) => setEditLead({ ...editLead, industry: e.target.value })}
+                  className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400"
+                />
+                <Select value={editLead.status} onValueChange={(value) => setEditLead({ ...editLead, status: value })}>
+                  <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="new">New</SelectItem>
+                    <SelectItem value="contacted">Contacted</SelectItem>
+                    <SelectItem value="qualified">Qualified</SelectItem>
+                    <SelectItem value="converted">Converted</SelectItem>
+                    <SelectItem value="lost">Lost</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Textarea
+                placeholder="Notes..."
+                value={editLead.notes}
+                onChange={(e) => setEditLead({ ...editLead, notes: e.target.value })}
+                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400"
+              />
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsEditLeadDialogOpen(false)}>Cancel</Button>
+              <Button 
+                onClick={() => updateLeadMutation.mutate({
+                  id: editLead.id,
+                  name: editLead.name,
+                  email: editLead.email,
+                  phone: editLead.phone || undefined,
+                  company: editLead.company || undefined,
+                  status: editLead.status,
+                  industry: editLead.industry || undefined
+                })}
+                disabled={!editLead.name || !editLead.email || updateLeadMutation.isPending}
+                className="bg-indigo-600 hover:bg-indigo-700"
+              >
+                Save Changes
               </Button>
             </DialogFooter>
           </DialogContent>
