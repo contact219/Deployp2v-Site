@@ -443,9 +443,9 @@ export default function CRM() {
                     {contacts.slice(0, 5).map((contact: any) => (
                       <div key={contact.id} className="flex items-center justify-between py-3 border-b border-gray-800 last:border-0">
                         <div>
-                          <p className="font-medium">{contact.name}</p>
-                          <p className="text-sm text-gray-400">{contact.email}</p>
-                          <p className="text-xs text-gray-500 mt-1">{contact.message?.substring(0, 80)}...</p>
+                          <p className="font-medium text-white">{contact.name}</p>
+                          <p className="text-sm text-gray-300">{contact.email}</p>
+                          <p className="text-xs text-gray-400 mt-1">{contact.message?.substring(0, 80)}...</p>
                         </div>
                         <Button 
                           onClick={() => convertContactMutation.mutate(contact.id)}
@@ -746,11 +746,11 @@ export default function CRM() {
                       }`} />
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <h4 className="font-medium">{activity.subject}</h4>
+                          <h4 className="font-medium text-white">{activity.subject}</h4>
                           <Badge variant="outline" className="text-xs capitalize">{activity.type}</Badge>
                         </div>
                         <p className="text-sm text-gray-400 mt-1">{activity.description}</p>
-                        <p className="text-xs text-gray-600 mt-2">
+                        <p className="text-xs text-gray-400 mt-2">
                           <Calendar className="h-3 w-3 inline mr-1" />
                           {new Date(activity.createdAt).toLocaleString()}
                         </p>
@@ -783,14 +783,14 @@ export default function CRM() {
                   placeholder="Name *"
                   value={newLead.name}
                   onChange={(e) => setNewLead({ ...newLead, name: e.target.value })}
-                  className="bg-gray-800 border-gray-700"
+                  className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400"
                 />
                 <Input
                   placeholder="Email *"
                   type="email"
                   value={newLead.email}
                   onChange={(e) => setNewLead({ ...newLead, email: e.target.value })}
-                  className="bg-gray-800 border-gray-700"
+                  className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -798,23 +798,23 @@ export default function CRM() {
                   placeholder="Phone"
                   value={newLead.phone}
                   onChange={(e) => setNewLead({ ...newLead, phone: e.target.value })}
-                  className="bg-gray-800 border-gray-700"
+                  className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400"
                 />
                 <Input
                   placeholder="Company"
                   value={newLead.company}
                   onChange={(e) => setNewLead({ ...newLead, company: e.target.value })}
-                  className="bg-gray-800 border-gray-700"
+                  className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400"
                 />
               </div>
               <Textarea
                 placeholder="Notes or context about this lead..."
                 value={newLead.originalMessage}
                 onChange={(e) => setNewLead({ ...newLead, originalMessage: e.target.value })}
-                className="bg-gray-800 border-gray-700"
+                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400"
               />
               <Select value={newLead.source} onValueChange={(value) => setNewLead({ ...newLead, source: value })}>
-                <SelectTrigger className="bg-gray-800 border-gray-700">
+                <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
                   <SelectValue placeholder="Lead Source" />
                 </SelectTrigger>
                 <SelectContent>
@@ -852,7 +852,7 @@ export default function CRM() {
                 placeholder="Deal Title *"
                 value={newDeal.title}
                 onChange={(e) => setNewDeal({ ...newDeal, title: e.target.value })}
-                className="bg-gray-800 border-gray-700"
+                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400"
               />
               <div className="grid grid-cols-2 gap-4">
                 <Input
@@ -860,10 +860,10 @@ export default function CRM() {
                   type="number"
                   value={newDeal.value}
                   onChange={(e) => setNewDeal({ ...newDeal, value: e.target.value })}
-                  className="bg-gray-800 border-gray-700"
+                  className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400"
                 />
                 <Select value={newDeal.stage} onValueChange={(value) => setNewDeal({ ...newDeal, stage: value })}>
-                  <SelectTrigger className="bg-gray-800 border-gray-700">
+                  <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
                     <SelectValue placeholder="Stage" />
                   </SelectTrigger>
                   <SelectContent>
@@ -878,7 +878,7 @@ export default function CRM() {
                 placeholder="Expected Close Date"
                 value={newDeal.expectedCloseDate}
                 onChange={(e) => setNewDeal({ ...newDeal, expectedCloseDate: e.target.value })}
-                className="bg-gray-800 border-gray-700"
+                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400"
               />
             </div>
             <DialogFooter>
@@ -917,7 +917,7 @@ export default function CRM() {
                 <Input
                   value={emailDraft.subject}
                   onChange={(e) => setEmailDraft({ ...emailDraft, subject: e.target.value })}
-                  className="bg-gray-800 border-gray-700"
+                  className="bg-gray-800 border-gray-700 text-white"
                 />
               </div>
               <div>
@@ -925,7 +925,7 @@ export default function CRM() {
                 <Textarea
                   value={emailDraft.body}
                   onChange={(e) => setEmailDraft({ ...emailDraft, body: e.target.value })}
-                  className="bg-gray-800 border-gray-700 min-h-[200px]"
+                  className="bg-gray-800 border-gray-700 text-white min-h-[200px]"
                 />
               </div>
             </div>
