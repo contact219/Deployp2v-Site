@@ -357,7 +357,7 @@ export default function CRM() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card className="bg-gray-900 border-gray-800">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-white">
                     <Activity className="h-5 w-5 text-indigo-400" />
                     Recent Activity
                   </CardTitle>
@@ -385,7 +385,7 @@ export default function CRM() {
 
               <Card className="bg-gray-900 border-gray-800">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-white">
                     <CheckCircle className="h-5 w-5 text-indigo-400" />
                     Pending Tasks
                   </CardTitle>
@@ -432,11 +432,11 @@ export default function CRM() {
             {contacts.length > 0 && (
               <Card className="bg-gray-900 border-gray-800 mt-6">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-white">
                     <MessageSquare className="h-5 w-5 text-yellow-400" />
                     Website Contacts (Ready to Convert)
                   </CardTitle>
-                  <CardDescription>Convert website inquiries into CRM leads with AI enrichment</CardDescription>
+                  <CardDescription className="text-gray-400">Convert website inquiries into CRM leads with AI enrichment</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
@@ -478,7 +478,7 @@ export default function CRM() {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h3 className="font-semibold text-lg">{lead.name}</h3>
+                          <h3 className="font-semibold text-lg text-white">{lead.name}</h3>
                           <Badge variant="outline" className="text-xs">
                             Score: {lead.score || 50}
                           </Badge>
@@ -686,7 +686,7 @@ export default function CRM() {
                         </Button>
                         <div>
                           <div className="flex items-center gap-2">
-                            <h3 className={`font-medium ${task.status === "completed" ? "line-through" : ""}`}>
+                            <h3 className={`font-medium text-white ${task.status === "completed" ? "line-through" : ""}`}>
                               {task.title}
                             </h3>
                             {task.aiGenerated && (
