@@ -9,7 +9,7 @@ import fs from "fs";
 import crypto from "crypto";
 import { enrichLead, generateFollowUpTask, generateEmailDraft, analyzeDeal } from "./ai-service";
 
-const ADMIN_PASSWORD = "deployp2v2024";
+const ADMIN_PASSWORD = "zadoL121cu!";
 const ALLOWED_MIME_TYPES = [
   'application/pdf',
   'image/jpeg',

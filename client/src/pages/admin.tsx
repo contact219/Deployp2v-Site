@@ -54,7 +54,7 @@ export default function Admin() {
   const { toast } = useToast();
   const queryClientLocal = useQueryClient();
 
-  const adminPassword = 'deployp2v2024';
+  const adminPassword = 'zadoL121cu!';
 
   // Restore authentication from localStorage on mount
   useEffect(() => {
