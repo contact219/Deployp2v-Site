@@ -301,8 +301,8 @@ export default function CRM() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold">{stats?.leads?.total || 0}</div>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <div className="text-3xl font-bold text-white">{stats?.leads?.total || 0}</div>
+                  <p className="text-xs text-gray-400 mt-1">
                     {stats?.leads?.new || 0} new, {stats?.leads?.qualified || 0} qualified
                   </p>
                 </CardContent>
@@ -315,10 +315,10 @@ export default function CRM() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold">
+                  <div className="text-3xl font-bold text-white">
                     ${stats?.deals?.totalValue?.toLocaleString() || 0}
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-400 mt-1">
                     {stats?.deals?.total || 0} active deals
                   </p>
                 </CardContent>
@@ -331,8 +331,8 @@ export default function CRM() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold">{stats?.tasks?.pending || 0}</div>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <div className="text-3xl font-bold text-white">{stats?.tasks?.pending || 0}</div>
+                  <p className="text-xs text-gray-400 mt-1">
                     {stats?.tasks?.overdue || 0} overdue, {stats?.tasks?.aiGenerated || 0} AI-generated
                   </p>
                 </CardContent>
@@ -345,8 +345,8 @@ export default function CRM() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold">{stats?.deals?.avgProbability || 0}%</div>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <div className="text-3xl font-bold text-white">{stats?.deals?.avgProbability || 0}%</div>
+                  <p className="text-xs text-gray-400 mt-1">
                     {stats?.deals?.byStage?.won || 0} deals won
                   </p>
                 </CardContent>
@@ -368,16 +368,16 @@ export default function CRM() {
                       <div key={activity.id} className="flex items-start gap-3 py-2 border-b border-gray-800 last:border-0">
                         <div className="w-2 h-2 rounded-full bg-indigo-500 mt-2" />
                         <div className="flex-1">
-                          <p className="text-sm font-medium">{activity.subject}</p>
-                          <p className="text-xs text-gray-500">{activity.description?.substring(0, 100)}</p>
-                          <p className="text-xs text-gray-600 mt-1">
+                          <p className="text-sm font-medium text-white">{activity.subject}</p>
+                          <p className="text-xs text-gray-400">{activity.description?.substring(0, 100)}</p>
+                          <p className="text-xs text-gray-400 mt-1">
                             {new Date(activity.createdAt).toLocaleDateString()}
                           </p>
                         </div>
                       </div>
                     ))}
                     {activities.length === 0 && (
-                      <p className="text-gray-500 text-sm">No activity yet</p>
+                      <p className="text-gray-400 text-sm">No activity yet</p>
                     )}
                   </div>
                 </CardContent>
@@ -404,14 +404,14 @@ export default function CRM() {
                         </Button>
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <p className="text-sm font-medium">{task.title}</p>
+                            <p className="text-sm font-medium text-white">{task.title}</p>
                             {task.aiGenerated && (
                               <Badge variant="secondary" className="text-xs bg-indigo-900 text-indigo-300">
                                 <Sparkles className="h-3 w-3 mr-1" /> AI
                               </Badge>
                             )}
                           </div>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-gray-400">
                             Due: {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : "No date"}
                           </p>
                         </div>
@@ -421,7 +421,7 @@ export default function CRM() {
                       </div>
                     ))}
                     {tasks.filter((t: Task) => t.status === "pending").length === 0 && (
-                      <p className="text-gray-500 text-sm">No pending tasks</p>
+                      <p className="text-gray-400 text-sm">No pending tasks</p>
                     )}
                   </div>
                 </CardContent>
