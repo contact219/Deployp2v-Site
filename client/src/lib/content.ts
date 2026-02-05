@@ -90,7 +90,8 @@ const BLOG_FILES = [
   'chatbots-customer-service-roi.md',
   'roi-of-automation-local-business.md',
   'ai-reduce-food-waste-restaurant.md',
-  'automating-appointment-scheduling.md',];
+  'automating-appointment-scheduling.md',
+  '5-ways-ai-reduce-food-waste.md',];
 
 // List of industry pages
 const INDUSTRY_FILES = [
