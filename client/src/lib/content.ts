@@ -92,7 +92,8 @@ const BLOG_FILES = [
   'ai-reduce-food-waste-restaurant.md',
   'automating-appointment-scheduling.md',
   '5-ways-ai-reduce-food-waste.md',
-  'reduce-food-waste-ai.md',];
+  'reduce-food-waste-ai.md',
+  'ai-marketing-on-a-budget-strategies-that-actually-work.md',];
 
 // List of industry pages
 const INDUSTRY_FILES = [
