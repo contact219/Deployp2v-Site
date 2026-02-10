@@ -91,7 +91,8 @@ const BLOG_FILES = [
   'roi-of-automation-local-business.md',
   'ai-reduce-food-waste-restaurant.md',
   'automating-appointment-scheduling.md',
-  '5-ways-ai-reduce-food-waste.md',];
+  '5-ways-ai-reduce-food-waste.md',
+  'reduce-food-waste-ai.md',];
 
 // List of industry pages
 const INDUSTRY_FILES = [
