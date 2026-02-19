@@ -17,6 +17,7 @@ import {
   Sparkles, Target, DollarSign, Activity, MessageSquare,
   ChevronRight, RefreshCw, Send, Trash2, Edit, Loader2
 } from "lucide-react";
+import rushLogo from '@assets/Rush_Enterprise_Logo_1771460600429.png';
 import type { Lead, Deal, Task, Activity as ActivityType, Communication } from "@shared/schema";
 
 const DEAL_STAGES = ["lead", "qualified", "proposal", "negotiation", "won", "lost"];
@@ -74,7 +75,7 @@ export default function CRM() {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <Card className="bg-gray-900 border-gray-800 p-8 text-center">
-          <Brain className="h-16 w-16 mx-auto text-indigo-400 mb-4" />
+          <img src={rushLogo} alt="Rush Enterprise Logo" className="h-16 w-16 mx-auto mb-4 object-contain" />
           <h2 className="text-xl font-bold text-white mb-2">Admin Access Required</h2>
           <p className="text-gray-400 mb-4">Please log in through the Admin Dashboard first.</p>
           <Button onClick={() => setLocation('/admin')} className="bg-indigo-600 hover:bg-indigo-700">
@@ -284,7 +285,7 @@ export default function CRM() {
             </Button>
             <div>
               <h1 className="text-3xl font-bold flex items-center gap-2">
-                <Brain className="h-8 w-8 text-indigo-400" />
+                <img src={rushLogo} alt="Rush Enterprise Logo" className="h-8 w-8 object-contain" />
                 AI-Powered CRM
               </h1>
               <p className="text-gray-400 mt-1">Autonomous lead management with AI enrichment</p>

@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useLocation } from 'wouter';
 import ChatbotWidget from '@/components/ChatbotWidget';
+import rushLogo from '@assets/Rush_Enterprise_Logo_1771460600429.png';
 import { 
   MessageSquare, 
   BarChart3, 
@@ -34,11 +35,8 @@ import {
   Rocket
 } from 'lucide-react';
 
-// SVG Logo Component
 const DeployP2VLogo = () => (
-  <svg className="w-8 h-8 text-indigo-500" fill="currentColor" viewBox="0 0 24 24">
-    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-  </svg>
+  <img src={rushLogo} alt="Rush Enterprise Logo" className="w-10 h-10 object-contain" />
 );
 
 // Common classes - optimized for mobile

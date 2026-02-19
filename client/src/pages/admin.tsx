@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLocation } from 'wouter';
 import { ArrowLeft, Mail, Phone, Building, Calendar, MessageSquare, Trash2, Eye, EyeOff, LogOut, Upload, Download, FileText, Image, File, FolderOpen, Brain } from 'lucide-react';
+import rushLogo from '@assets/Rush_Enterprise_Logo_1771460600429.png';
 import { format } from 'date-fns';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
@@ -342,6 +343,7 @@ export default function Admin() {
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Home
             </Button>
+            <img src={rushLogo} alt="Rush Enterprise Logo" className="w-10 h-10 object-contain" />
             <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>
           </div>
           <div className="flex items-center space-x-3">
