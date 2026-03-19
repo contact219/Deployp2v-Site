@@ -40,6 +40,40 @@ export function BlogPost() {
         <meta property="og:title" content={post.title} />
         <meta property="og:description" content={post.description} />
         <meta property="og:type" content="article" />
+        <link rel="canonical" href={`https://deployp2v.com/blog/${post.slug}`} />
+        <meta property="og:url" content={`https://deployp2v.com/blog/${post.slug}`} />
+        <meta property="og:image" content="https://deployp2v.com/og-image.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:description" content={post.description} />
+        <meta name="twitter:image" content="https://deployp2v.com/og-image.png" />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            headline: post.title,
+            description: post.description,
+            author: {
+              '@type': 'Organization',
+              name: post.author || 'DeployP2V'
+            },
+            datePublished: post.date,
+            mainEntityOfPage: {
+              '@type': 'WebPage',
+              '@id': `https://deployp2v.com/blog/${post.slug}`
+            },
+            image: 'https://deployp2v.com/og-image.png',
+            publisher: {
+              '@type': 'Organization',
+              name: 'DeployP2V',
+              logo: {
+                '@type': 'ImageObject',
+                url: 'https://deployp2v.com/logo.png'
+              }
+            }
+          })}
+        </script>
+
       </Helmet>
       <article className="container mx-auto px-4 py-12 max-w-4xl">
         <Link href="/blog" className="text-blue-600 hover:text-blue-800 mb-6 inline-block">← Back to blog</Link>

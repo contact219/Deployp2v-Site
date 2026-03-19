@@ -39,6 +39,15 @@ export function IndustryPage() {
         <meta name="keywords" content={page.keywords.join(', ')} />
         <meta property="og:title" content={page.title} />
         <meta property="og:description" content={page.description} />
+        <link rel="canonical" href={`https://deployp2v.com/industries/${page.slug}`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`https://deployp2v.com/industries/${page.slug}`} />
+        <meta property="og:image" content="https://deployp2v.com/og-image.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={page.title} />
+        <meta name="twitter:description" content={page.description} />
+        <meta name="twitter:image" content="https://deployp2v.com/og-image.png" />
+
       </Helmet>
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
         <div className="container mx-auto px-4">

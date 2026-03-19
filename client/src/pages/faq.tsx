@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 
 const faqs = [
   {
@@ -94,6 +95,35 @@ export default function FAQ() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
+      <Helmet>
+        <title>FAQ | DeployP2V - AI Solutions for Small Business</title>
+        <meta name="description" content="Frequently asked questions about AI solutions, pricing, security, and implementation for small businesses." />
+        <link rel="canonical" href="https://deployp2v.com/faq" />
+        <meta property="og:title" content="FAQ | DeployP2V - AI Solutions for Small Business" />
+        <meta property="og:description" content="Frequently asked questions about AI solutions, pricing, security, and implementation for small businesses." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://deployp2v.com/faq" />
+        <meta property="og:image" content="https://deployp2v.com/og-image.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="FAQ | DeployP2V - AI Solutions for Small Business" />
+        <meta name="twitter:description" content="Frequently asked questions about AI solutions, pricing, security, and implementation for small businesses." />
+        <meta name="twitter:image" content="https://deployp2v.com/og-image.png" />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: faqs.map((f) => ({
+              '@type': 'Question',
+              name: f.question,
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: f.answer
+              }
+            }))
+          })}
+        </script>
+      </Helmet>
+
       {/* Header */}
       <header className="bg-gray-800 shadow-md py-4">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
