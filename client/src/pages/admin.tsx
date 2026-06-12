@@ -503,7 +503,7 @@ export default function Admin() {
                     ref={fileInputRef}
                     onChange={handleFileUpload}
                     className="hidden"
-                    accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.doc,.docx,.xls,.xlsx,.txt,.csv"
+                    accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.doc,.docx,.xls,.xlsx,.txt,.csv,.mp3,.wav,.m4a,.aac,.ogg,.flac,.mp4,.mov,.avi,.webm,.mkv,.mpeg"
                     data-testid="input-file-upload"
                   />
                   <Button
@@ -518,7 +518,7 @@ export default function Admin() {
                 </div>
               </div>
               <p className="text-gray-400 text-sm mt-2">
-                Supported formats: PDF, Images (JPG, PNG, GIF, WebP), Documents (DOC, DOCX, XLS, XLSX), Text files (TXT, CSV). Max size: 1GB
+                Supported formats: PDF, Images (JPG, PNG, GIF, WebP), Documents (DOC, DOCX, XLS, XLSX), Text files (TXT, CSV), Audio (MP3, WAV, M4A, AAC, OGG, FLAC), Video (MP4, MOV, AVI, WebM, MKV). Max size: 2GB
               </p>
             </div>
 
