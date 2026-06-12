@@ -9,7 +9,7 @@ import fs from "fs";
 import crypto from "crypto";
 import { enrichLead, generateFollowUpTask, generateEmailDraft, analyzeDeal } from "./ai-service";
 
-const ADMIN_PASSWORD = "zadoL121cu!";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const ALLOWED_MIME_TYPES = [
   'application/pdf',
   'image/jpeg',
@@ -55,13 +55,22 @@ const upload = multer({
 
 const verifyAdmin = (req: Request, res: Response, next: NextFunction) => {
   const adminToken = req.headers['x-admin-token'];
-  if (adminToken !== ADMIN_PASSWORD) {
+  if (!ADMIN_PASSWORD || adminToken !== ADMIN_PASSWORD) {
     return res.status(401).json({ success: false, error: 'Unauthorized' });
   }
   next();
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Admin login check — password lives in the ADMIN_PASSWORD env var only
+  app.post("/api/admin/login", (req, res) => {
+    const { password } = req.body ?? {};
+    if (ADMIN_PASSWORD && password === ADMIN_PASSWORD) {
+      return res.json({ success: true });
+    }
+    res.status(401).json({ success: false, error: "Incorrect password" });
+  });
+
   // Contact form submission endpoint
   app.post("/api/contact", async (req, res) => {
     try {

@@ -54,19 +54,44 @@ export default function Admin() {
   const { toast } = useToast();
   const queryClientLocal = useQueryClient();
 
-  const adminPassword = 'zadoL121cu!';
+  const checkPassword = async (candidate: string): Promise<boolean> => {
+    const res = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: candidate }),
+    });
+    return res.ok;
+  };
 
   // Restore authentication from localStorage on mount
   useEffect(() => {
     const savedToken = localStorage.getItem('adminToken');
-    if (savedToken === adminPassword) {
-      setIsAuthenticated(true);
-      setAdminToken(savedToken);
-    }
+    if (!savedToken) return;
+    checkPassword(savedToken)
+      .then((ok) => {
+        if (ok) {
+          setIsAuthenticated(true);
+          setAdminToken(savedToken);
+        } else {
+          localStorage.removeItem('adminToken');
+        }
+      })
+      .catch(() => {});
   }, []);
 
-  const handleLogin = () => {
-    if (password === adminPassword) {
+  const handleLogin = async () => {
+    let ok = false;
+    try {
+      ok = await checkPassword(password);
+    } catch {
+      toast({
+        title: "Login Failed",
+        description: "Could not reach the server",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (ok) {
       setIsAuthenticated(true);
       setAdminToken(password);
       localStorage.setItem('adminToken', password);
