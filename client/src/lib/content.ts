@@ -95,7 +95,8 @@ const BLOG_FILES = [
   'reduce-food-waste-ai.md',
   'ai-marketing-on-a-budget-strategies-that-actually-work.md',
   'how-ai-chatbots-are-revolutionizing-customer-service.md',
-  'how-to-choose-the-right-ai-tools-for-your-business-size.md',];
+  'how-to-choose-the-right-ai-tools-for-your-business-size.md',
+  '5-ways-ai-can-help-your-restaurant-reduce-food-waste.md',];
 
 // List of industry pages
 const INDUSTRY_FILES = [
