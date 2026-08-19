@@ -56,7 +56,10 @@ export default function Footer() {
             >
               Deploy<span className="text-volt">P2V</span>
             </Link>
-            <p className="mt-4 font-display text-lg font-semibold text-mist">
+            <p className="mt-2 text-sm font-medium tracking-wide text-volt">
+              P2V — Possibility to Velocity
+            </p>
+            <p className="mt-3 font-display text-lg font-semibold text-mist">
               The busywork runs itself now.
             </p>
             <ul className="mt-6 space-y-2.5 text-sm text-mist-muted">
