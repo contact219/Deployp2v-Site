@@ -1,0 +1,28 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy over SSH
+        # The key in VPS_SSH_KEY is restricted on the server to a single
+        # forced command (/usr/local/bin/deployp2v-deploy.sh): it can only
+        # run the deploy (git pull, npm ci, build, service restart,
+        # healthcheck) — no shell, no forwarding. The command sent below is
+        # ignored by sshd in favor of the forced command.
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes \
+            root@"${{ secrets.VPS_HOST }}" deploy
