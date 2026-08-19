@@ -142,8 +142,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Chatbot lead capture — the chat widget posts here when a visitor
+  // completes qualification or shares an email. Stored as a contact so it
+  // shows up in the same admin pipeline as the contact form.
+  const chatbotLeadSchema = z.object({
+    name: z.string().trim().max(200).optional(),
+    email: z.string().trim().email().optional(),
+    company: z.string().trim().max(200).optional(),
+    industry: z.string().trim().max(200).optional(),
+    businessSize: z.string().trim().max(100).optional(),
+    currentChallenges: z.union([z.string(), z.array(z.string())]).optional(),
+    techLevel: z.string().trim().max(200).optional(),
+    budget: z.string().trim().max(100).optional(),
+    aiReadinessScore: z.number().min(0).max(100).optional(),
+    leadScore: z.number().min(0).max(100).optional(),
+    transcriptSummary: z.string().trim().max(4000).optional(),
+  }).refine(
+    (data) => data.email || data.aiReadinessScore !== undefined,
+    { message: "Lead must include an email or a completed assessment" }
+  );
+
+  app.post("/api/chatbot-lead", async (req, res) => {
+    try {
+      const lead = chatbotLeadSchema.parse(req.body);
+      const challenges = Array.isArray(lead.currentChallenges)
+        ? lead.currentChallenges.join(", ")
+        : lead.currentChallenges;
+      const lines = [
+        "[Chatbot lead]",
+        lead.industry && `Industry: ${lead.industry}`,
+        lead.businessSize && `Business size: ${lead.businessSize}`,
+        challenges && `Challenges: ${challenges}`,
+        lead.techLevel && `Tech level: ${lead.techLevel}`,
+        lead.budget && `Budget: ${lead.budget}`,
+        lead.aiReadinessScore !== undefined && `AI readiness score: ${lead.aiReadinessScore}/100`,
+        lead.leadScore !== undefined && `Lead score: ${lead.leadScore}/100`,
+        lead.transcriptSummary && `Notes: ${lead.transcriptSummary}`,
+      ].filter(Boolean) as string[];
+
+      const contact = await storage.createContact({
+        name: lead.name || "Chatbot visitor",
+        email: lead.email || "not-provided@chatbot.deployp2v.com",
+        company: lead.company ?? null,
+        phone: null,
+        message: lines.join("\n"),
+      });
+      res.json({ success: true, contact });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({
+          success: false,
+          error: "Validation failed",
+          details: error.errors,
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          error: "Failed to save chatbot lead",
+        });
+      }
+    }
+  });
+
   // Get newsletter subscribers (for admin purposes)
-  app.get("/api/newsletter/subscribers", async (req, res) => {
+  app.get("/api/newsletter/subscribers", verifyAdmin, async (req, res) => {
     try {
       const subscribers = await storage.getNewsletterSubscribers();
       res.json({ success: true, subscribers });

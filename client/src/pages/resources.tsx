@@ -354,10 +354,23 @@ export default function Resources() {
     setIsResourceModalOpen(true);
   };
 
-  const downloadResource = (resource: typeof resources[0], email: string) => {
-    if (!email) {
-      alert('Please enter your email address to download the resource.');
+  const downloadResource = async (resource: typeof resources[0], email: string) => {
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      alert('Please enter a valid email address to download the resource.');
       return;
+    }
+
+    // Capture the email before releasing the download. A failure (e.g. the
+    // email is already subscribed) never blocks the download itself.
+    try {
+      await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: trimmedEmail }),
+      });
+    } catch {
+      // Network error — still let the visitor have the resource.
     }
 
     // Create downloadable content based on the resource
@@ -2011,7 +2024,7 @@ Location: Wylie, TX
             onClick={() => setLocation('/')}
             className="bg-indigo-600 text-white px-8 py-4 text-lg rounded-lg hover:bg-indigo-700 transition duration-300"
           >
-            Schedule Free Consultation
+            Book a free 15-min call
           </Button>
         </div>
       </section>
@@ -2085,7 +2098,7 @@ Location: Wylie, TX
                   }}
                   className="bg-indigo-600 hover:bg-indigo-700 text-white"
                 >
-                  Schedule Free Consultation
+                  Book a free 15-min call
                 </Button>
               </div>
             </div>
@@ -2146,7 +2159,7 @@ Location: Wylie, TX
                   }}
                   className="bg-indigo-600 hover:bg-indigo-700 text-white"
                 >
-                  Schedule Strategy Session
+                  Book a free 15-min call
                 </Button>
               </div>
             </div>
@@ -2180,7 +2193,7 @@ Location: Wylie, TX
                         </td>
                         <td className="py-4 px-4">
                           <div className="space-y-1">
-                            {tech.bestFor.map((item, i) => (
+                            {tech.bestFor.map((item: string, i: number) => (
                               <Badge key={i} variant="secondary" className="mr-1 mb-1 text-xs">
                                 {item}
                               </Badge>
@@ -2199,7 +2212,7 @@ Location: Wylie, TX
                         <td className="py-4 px-4 text-gray-300">{tech.implementationTime}</td>
                         <td className="py-4 px-4">
                           <div className="space-y-1">
-                            {tech.businessSizes.map((size, i) => (
+                            {tech.businessSizes.map((size: string, i: number) => (
                               <Badge key={i} variant="outline" className="mr-1 mb-1 text-xs">
                                 {size}
                               </Badge>
@@ -2223,7 +2236,7 @@ Location: Wylie, TX
                         <div>
                           <h4 className="text-sm font-semibold text-gray-300 mb-2">Common Use Cases:</h4>
                           <ul className="space-y-1">
-                            {tech.useCases.map((useCase, i) => (
+                            {tech.useCases.map((useCase: string, i: number) => (
                               <li key={i} className="text-gray-400 text-sm flex items-start">
                                 <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full mt-2 mr-2 flex-shrink-0"></span>
                                 {useCase}

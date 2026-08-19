@@ -330,7 +330,7 @@ export default function ROICalculator() {
                     onClick={() => setLocation('/')}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white"
                   >
-                    Schedule Consultation
+                    Book a free 15-min call
                   </Button>
                   <Button 
                     onClick={() => setLocation('/case-studies')}

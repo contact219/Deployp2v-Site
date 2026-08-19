@@ -1,6 +1,23 @@
 import OpenAI from "openai";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Lazy-init so the server can boot without OPENAI_API_KEY — the OpenAI SDK
+// throws in its constructor when no key is present. AI features fail at call
+// time with a clear error instead of crashing the whole app at import.
+let _openai: OpenAI | null = null;
+function getOpenAI(): OpenAI {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error("OPENAI_API_KEY is not set — AI features are unavailable.");
+  }
+  if (!_openai) {
+    _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+  return _openai;
+}
+const openai = {
+  get chat() {
+    return getOpenAI().chat;
+  },
+};
 
 export interface LeadEnrichmentResult {
   aiSummary: string;
