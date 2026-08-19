@@ -46,7 +46,7 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
       buttons: [
         { id: 'learn_services', text: 'Learn About AI Services', action: 'show_services' },
         { id: 'ai_assessment', text: 'AI Readiness Assessment', action: 'start_assessment' },
-        { id: 'book_consultation', text: 'Book Free Consultation', action: 'book_appointment' },
+        { id: 'book_consultation', text: 'Book a free 15-min call', action: 'book_appointment' },
         { id: 'get_resources', text: 'Download Resources', action: 'show_resources' }
       ]
     }
@@ -57,6 +57,99 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
   const [conversationState, setConversationState] = useState<string>('initial');
   const [assessmentStep, setAssessmentStep] = useState<number>(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const sentLeadKeysRef = useRef<Set<string>>(new Set());
+
+  // FAB discipline (all viewports, mobile included): the launcher hides
+  // while the page is scrolling and slides back after ~1s of scroll idle,
+  // so it never sits over copy or CTA rows mid-read at any scroll
+  // position. It also waits out the first second after load so it never
+  // pops over the hero before the visitor has seen it. The open chat
+  // window is never auto-hidden.
+  const [fabHidden, setFabHidden] = useState(true);
+  const fabIdleTimer = useRef<number | undefined>(undefined);
+
+  useEffect(() => {
+    const show = () => setFabHidden(false);
+    fabIdleTimer.current = window.setTimeout(show, 1000);
+    const onScroll = () => {
+      setFabHidden(true);
+      window.clearTimeout(fabIdleTimer.current);
+      fabIdleTimer.current = window.setTimeout(show, 1000);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.clearTimeout(fabIdleTimer.current);
+    };
+  }, []);
+
+  // Corner-clearance guard: the launcher lives in the bottom-right corner,
+  // so while the TrustBar marquee row or a closing CTA band (#final-cta /
+  // #contact / footer) occupies the bottom ~30% of the viewport, the
+  // launcher stays hidden entirely. Structurally it can never overlap
+  // those rows — no offset tuning involved. rootMargin -70% top shrinks
+  // the observation root to the viewport's bottom band.
+  const [cornerBlocked, setCornerBlocked] = useState(false);
+  useEffect(() => {
+    if (typeof IntersectionObserver === 'undefined') return;
+    const targets = Array.from(
+      document.querySelectorAll('#hero, #trustbar, #final-cta, #contact, footer'),
+    );
+    if (targets.length === 0) return;
+    const inCorner = new Set<Element>();
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) inCorner.add(entry.target);
+          else inCorner.delete(entry.target);
+        }
+        setCornerBlocked(inCorner.size > 0);
+      },
+      { rootMargin: '-70% 0px 0px 0px' },
+    );
+    targets.forEach((t) => io.observe(t));
+    return () => io.disconnect();
+  }, []);
+
+  // Persist a qualified lead to the server. Fire-and-forget: chat behavior
+  // never changes if the request fails. Deduped so the same profile state
+  // isn't submitted twice.
+  const submitChatbotLead = (profile: UserProfile, summary?: string) => {
+    const hasEmail = Boolean(profile.email);
+    const hasAssessment = profile.aiReadinessScore !== undefined;
+    if (!hasEmail && !hasAssessment) return;
+
+    const key = `${profile.email ?? ''}|${profile.aiReadinessScore ?? ''}|${profile.leadScore ?? ''}`;
+    if (sentLeadKeysRef.current.has(key)) return;
+    sentLeadKeysRef.current.add(key);
+
+    const challenges = profile.currentChallenges
+      ? Array.isArray(profile.currentChallenges)
+        ? profile.currentChallenges
+        : [profile.currentChallenges as unknown as string]
+      : undefined;
+
+    fetch('/api/chatbot-lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: profile.name,
+        email: profile.email,
+        company: profile.company,
+        industry: profile.industry,
+        businessSize: profile.businessSize,
+        currentChallenges: challenges,
+        techLevel: profile.techLevel,
+        budget: profile.budget,
+        aiReadinessScore: profile.aiReadinessScore,
+        leadScore: profile.leadScore,
+        transcriptSummary: summary,
+      }),
+    }).catch(() => {
+      // Allow a retry on the next qualifying event if this attempt failed.
+      sentLeadKeysRef.current.delete(key);
+    });
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -237,14 +330,14 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
       case 'book_appointment':
         if (onBookAppointment) {
           setTimeout(() => onBookAppointment(), 1000);
-          response = "Perfect! Let me open our consultation booking form for you. You can also reach us directly:\n\n📞 (214) 604-5735\n📧 tsparks@deployp2v.com\n📍 Wylie, TX\n\nOur consultations are completely free and typically last 30 minutes.";
+          response = "Perfect! Let me open our consultation booking form for you. You can also reach us directly:\n\n📞 (214) 604-5735\n📧 tsparks@deployp2v.com\n📍 Wylie, TX\n\nThe call is completely free and takes about 15 minutes.";
         }
         break;
         
       case 'provide_roi_calculator':
         response = "Here's a quick ROI estimate based on typical results:\n\n💰 Average cost savings: 25-40%\n⚡ Efficiency improvement: 30-50%\n⏱️ Time saved per week: 10-20 hours\n📈 Typical ROI: 200-400% in first year\n\nFor a personalized ROI calculation, I'd recommend scheduling a consultation where we can analyze your specific business metrics.";
         buttons = [
-          { id: 'book_after_roi', text: 'Schedule ROI Analysis', action: 'book_appointment' },
+          { id: 'book_after_roi', text: 'Book a free 15-min call', action: 'book_appointment' },
           { id: 'more_resources', text: 'More Resources', action: 'show_resources' }
         ];
         break;
@@ -254,7 +347,7 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
         buttons = [
           { id: 'industry_demo', text: 'Industry-Specific Demo', action: 'show_industry_demo' },
           { id: 'pricing_cs', text: 'See Pricing', action: 'show_pricing_details' },
-          { id: 'book_cs_demo', text: 'Book Demo Call', action: 'book_appointment' }
+          { id: 'book_cs_demo', text: 'Book a free 15-min call', action: 'book_appointment' }
         ];
         break;
 
@@ -280,7 +373,7 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
         response = "Complete AI Solutions Portfolio:\n\n🤖 AI Customer Support & Chatbots\n📊 Predictive Analytics & Forecasting\n⚡ Business Process Automation\n📝 Document Processing & OCR\n🎯 AI-Enhanced CRM Systems\n📅 Automated Scheduling & Booking\n📈 Market Research & Analysis\n💼 Internal Productivity Apps\n\nAll solutions are:\n✅ Customized for your industry\n✅ Implemented in 2-4 weeks\n✅ Backed by ongoing support\n✅ Designed to pay for themselves\n\nReady to get started?";
         buttons = [
           { id: 'start_assessment', text: 'Take AI Assessment', action: 'start_assessment' },
-          { id: 'book_consultation', text: 'Book Consultation', action: 'book_appointment' },
+          { id: 'book_consultation', text: 'Book a free 15-min call', action: 'book_appointment' },
           { id: 'see_pricing', text: 'View Pricing', action: 'show_pricing_details' }
         ];
         break;
@@ -288,7 +381,7 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
       case 'show_pricing_details':
         response = "Our Transparent Pricing:\n\n🚀 STARTER - $149/month\n• AI Receptionist or Lead Assistant - Live in 7 days\n• Basic customization\n• Email support\n• Monthly reports\n\n💼 PROFESSIONAL - $499/month\n• Everything in Starter, plus:\n• Up to 3 AI Agents\n• Advanced customization & workflows\n• CRM, calendar, email, or website integrations\n• Weekly analytics & insights\n• Priority phone & email support\n\n🏢 ENTERPRISE - Custom pricing\n• Unlimited AI agents\n• Fully custom AI development\n• Dedicated account manager\n• 24/7 priority support\n• Real-time analytics dashboard\n• Security, compliance & SLA options\n• Best for: Enterprises, franchises, internal AI systems\n\nAll plans include free consultation and setup. Most clients see ROI within 3-6 months.";
         buttons = [
-          { id: 'book_pricing', text: 'Discuss Pricing', action: 'book_appointment' },
+          { id: 'book_pricing', text: 'Book a free 15-min call', action: 'book_appointment' },
           { id: 'roi_details', text: 'Calculate My ROI', action: 'provide_roi_calculator' }
         ];
         break;
@@ -297,7 +390,7 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
       case 'detail_lead_scoring':
         response = "AI Lead Scoring System:\n\n🎯 Automatic lead qualification based on behavior\n📊 Scoring algorithms trained on your successful sales\n🔄 Real-time lead prioritization\n📈 Integration with your existing CRM\n💡 Predictive buying intent analysis\n📋 Customizable scoring criteria\n\nResults: 30% improvement in conversion rates, 50% better sales team efficiency.\n\nWant to see how this works with your current leads?";
         buttons = [
-          { id: 'demo_scoring', text: 'Request Demo', action: 'book_appointment' },
+          { id: 'demo_scoring', text: 'Book a free 15-min call', action: 'book_appointment' },
           { id: 'integration_help', text: 'CRM Integration Info', action: 'show_integration_details' }
         ];
         break;
@@ -305,7 +398,7 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
       case 'detail_sales_forecast':
         response = "Predictive Sales Forecasting:\n\n📈 AI-powered revenue predictions\n📊 Seasonal trend analysis\n🎯 Pipeline probability scoring\n📅 Monthly/quarterly forecasting\n💰 Revenue optimization recommendations\n📉 Risk factor identification\n\nResults: 85% forecast accuracy, 25% improvement in revenue planning.\n\nReady to improve your sales predictions?";
         buttons = [
-          { id: 'forecast_demo', text: 'See Forecast Demo', action: 'book_appointment' },
+          { id: 'forecast_demo', text: 'Book a free 15-min call', action: 'book_appointment' },
           { id: 'accuracy_info', text: 'Accuracy Details', action: 'show_accuracy_details' }
         ];
         break;
@@ -314,7 +407,7 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
         response = "AI Marketing Optimization:\n\n📱 Campaign performance analysis\n🎯 Audience segmentation and targeting\n💰 Budget allocation optimization\n📊 A/B testing automation\n🔄 Real-time campaign adjustments\n📈 ROI tracking and reporting\n\nResults: 40% improvement in marketing ROI, 60% better targeting accuracy.\n\nWhich marketing channels do you want to optimize?";
         buttons = [
           { id: 'channel_analysis', text: 'Channel Analysis', action: 'show_channel_details' },
-          { id: 'marketing_demo', text: 'Book Marketing Demo', action: 'book_appointment' }
+          { id: 'marketing_demo', text: 'Book a free 15-min call', action: 'book_appointment' }
         ];
         break;
 
@@ -322,7 +415,7 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
         response = "Automated Data Entry Solutions:\n\n⚡ OCR document scanning and processing\n📄 Form data extraction and validation\n🔄 Database integration and sync\n📊 Real-time data verification\n🎯 Custom field mapping\n📋 Error detection and correction\n\nResults: 80% reduction in manual entry time, 95% accuracy improvement.\n\nWhat types of documents do you process most?";
         buttons = [
           { id: 'document_types', text: 'Document Types', action: 'show_document_options' },
-          { id: 'data_demo', text: 'See Data Demo', action: 'book_appointment' }
+          { id: 'data_demo', text: 'Book a free 15-min call', action: 'book_appointment' }
         ];
         break;
 
@@ -337,7 +430,7 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
       case 'detail_workflow':
         response = "Workflow Optimization with AI:\n\n🔄 Process mapping and analysis\n⚡ Bottleneck identification\n📋 Task automation and routing\n👥 Team coordination optimization\n📊 Performance monitoring\n🎯 Continuous improvement recommendations\n\nResults: 45% faster task completion, 60% improvement in team efficiency.\n\nWhat workflows cause the most delays?";
         buttons = [
-          { id: 'workflow_analysis', text: 'Workflow Analysis', action: 'book_appointment' },
+          { id: 'workflow_analysis', text: 'Book a free 15-min call', action: 'book_appointment' },
           { id: 'process_mapping', text: 'Process Mapping Info', action: 'show_process_details' }
         ];
         break;
@@ -347,7 +440,7 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
         if (action.startsWith('show_') || action.startsWith('detail_')) {
           response = "I'd be happy to provide more details about this! Let me connect you with one of our AI specialists who can give you comprehensive information and answer all your questions.\n\nYou can also explore our other services or take our AI readiness assessment.";
           buttons = [
-            { id: 'specialist_call', text: 'Talk to Specialist', action: 'book_appointment' },
+            { id: 'specialist_call', text: 'Book a free 15-min call', action: 'book_appointment' },
             { id: 'back_services', text: 'Back to Services', action: 'show_services' },
             { id: 'take_assessment', text: 'Take Assessment', action: 'start_assessment' }
           ];
@@ -380,10 +473,14 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
         
         setUserProfile(prev => ({ ...prev, aiReadinessScore: aiReadiness, leadScore }));
         setConversationState('assessment_complete');
+        submitChatbotLead(
+          { ...updatedProfile, aiReadinessScore: aiReadiness, leadScore },
+          'Completed the AI readiness assessment in the website chatbot.'
+        );
         
         response = `🎉 Assessment Complete!\n\nYour AI Readiness Score: ${aiReadiness}/100\n\nBased on your answers:\n${generatePersonalizedRecommendations(updatedProfile, aiReadiness)}\n\nWould you like to discuss a customized AI strategy for your business?`;
         buttons = [
-          { id: 'book_strategy', text: 'Schedule Strategy Call', action: 'book_appointment' },
+          { id: 'book_strategy', text: 'Book a free 15-min call', action: 'book_appointment' },
           { id: 'learn_more', text: 'Learn More About Solutions', action: 'show_services' },
           { id: 'get_resources_post', text: 'Download Resources', action: 'show_resources' }
         ];
@@ -516,6 +613,15 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
     setInputValue('');
     setIsTyping(true);
 
+    // If the visitor shares an email anywhere in the conversation, capture it
+    // and persist the lead so a real person can follow up.
+    const emailMatch = input.match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/);
+    if (emailMatch && emailMatch[0] !== userProfile.email) {
+      const updatedProfile = { ...userProfile, email: emailMatch[0] };
+      setUserProfile(prev => ({ ...prev, email: emailMatch[0] }));
+      submitChatbotLead(updatedProfile, 'Shared their email in the website chatbot.');
+    }
+
     // Simulate AI response delay
     setTimeout(() => {
       const botResponse: ChatMessage = {
@@ -541,26 +647,36 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
       {!isOpen && (
         <Button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-indigo-600 hover:bg-indigo-700 shadow-lg z-50 p-0 touch-manipulation"
+          aria-label="Chat with DeployP2V"
+          // Brand system (round 5): dark ink launcher with a volt mark — no
+          // indigo. Small on mobile (44px = minimum touch target, never
+          // smaller) with a safe-area-aware bottom margin; z-40 keeps it
+          // under the sticky header (z-50). While the page scrolls it slides
+          // out of the corner and returns after ~1s idle (fabHidden), and it
+          // stays out whenever the marquee or a CTA band owns the corner
+          // (cornerBlocked).
+          className={`fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 h-11 w-11 md:bottom-6 md:right-6 md:h-14 md:w-14 rounded-full bg-ink hover:bg-ink-2 border border-[rgba(198,246,40,0.5)] hover:border-volt shadow-[0_8px_32px_rgba(8,12,22,0.5)] z-40 p-0 touch-manipulation transition-[transform,opacity] duration-300 ease-out ${
+            fabHidden || cornerBlocked ? 'translate-y-24 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
+          }`}
         >
-          <MessageCircle className="h-6 w-6 text-white" />
+          <MessageCircle className="h-5 w-5 md:h-6 md:w-6 text-volt" />
         </Button>
       )}
 
       {/* Chat Window */}
       {isOpen && (
-        <Card className="fixed bottom-6 right-6 w-80 sm:w-96 h-96 bg-gray-800 border-gray-600 shadow-xl z-50 flex flex-col">
+        <Card className="fixed bottom-4 right-4 w-[calc(100vw-2rem)] max-w-sm sm:w-96 md:bottom-6 md:right-6 h-96 bg-ink-2 border-[rgba(246,247,242,0.14)] shadow-xl z-40 flex flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-600">
+          <div className="flex items-center justify-between p-4 border-b border-[rgba(246,247,242,0.14)]">
             <div className="flex items-center space-x-2">
-              <Bot className="h-5 w-5 text-indigo-400" />
-              <span className="font-semibold text-white text-sm">DeployP2V Assistant</span>
+              <Bot className="h-5 w-5 text-volt" />
+              <span className="font-semibold text-mist text-sm">DeployP2V Assistant</span>
             </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsOpen(false)}
-              className="text-gray-400 hover:text-white p-1 h-auto"
+              className="text-mist-muted hover:text-mist p-1 h-auto"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -576,12 +692,12 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
                 <div
                   className={`max-w-[80%] p-3 rounded-lg text-sm ${
                     message.type === 'user'
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-gray-700 text-gray-200'
+                      ? 'bg-mist text-ink'
+                      : 'bg-ink-3 text-mist'
                   }`}
                 >
                   <div className="flex items-start space-x-2">
-                    {message.type === 'bot' && <Bot className="h-4 w-4 mt-0.5 text-indigo-400 flex-shrink-0" />}
+                    {message.type === 'bot' && <Bot className="h-4 w-4 mt-0.5 text-mist-muted flex-shrink-0" />}
                     {message.type === 'user' && <User className="h-4 w-4 mt-0.5 flex-shrink-0" />}
                     <div className="flex-1">
                       <span className="leading-relaxed whitespace-pre-line">{message.message}</span>
@@ -593,7 +709,7 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
                               variant="outline"
                               size="sm"
                               onClick={() => handleButtonClick(button.action, button.id)}
-                              className="text-xs bg-gray-600 border-gray-500 text-gray-200 hover:bg-gray-500 hover:text-white"
+                              className="text-xs bg-ink border-[rgba(246,247,242,0.25)] text-mist hover:bg-ink-3 hover:border-[rgba(246,247,242,0.5)] hover:text-mist"
                             >
                               {button.text}
                             </Button>
@@ -609,13 +725,14 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
             {/* Typing Indicator */}
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-gray-700 text-gray-200 p-3 rounded-lg text-sm max-w-[80%]">
+                <div className="bg-ink-3 text-mist p-3 rounded-lg text-sm max-w-[80%]">
                   <div className="flex items-center space-x-2">
-                    <Bot className="h-4 w-4 text-indigo-400" />
+                    <Bot className="h-4 w-4 text-mist-muted" />
                     <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      {/* Activity dots — volt is the live/action color */}
+                      <div className="w-2 h-2 bg-volt rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-volt rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-volt rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                     </div>
                   </div>
                 </div>
@@ -625,19 +742,19 @@ export default function ChatbotWidget({ onBookAppointment }: ChatbotWidgetProps)
           </CardContent>
 
           {/* Input */}
-          <div className="p-4 border-t border-gray-600">
+          <div className="p-4 border-t border-[rgba(246,247,242,0.14)]">
             <div className="flex space-x-2">
               <Input
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Ask about AI services..."
-                className="flex-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400 text-sm"
+                className="flex-1 bg-ink-3 border-[rgba(246,247,242,0.22)] text-mist placeholder:text-mist-muted text-sm"
               />
               <Button
                 onClick={handleSendMessage}
                 disabled={!inputValue.trim()}
-                className="bg-indigo-600 hover:bg-indigo-700 p-2 touch-manipulation"
+                className="bg-volt hover:bg-volt-bright text-ink p-2 touch-manipulation"
               >
                 <Send className="h-4 w-4" />
               </Button>

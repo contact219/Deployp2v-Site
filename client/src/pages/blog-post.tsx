@@ -759,7 +759,7 @@ export default function BlogPost() {
             onClick={() => setLocation('/')}
             className="bg-indigo-600 hover:bg-indigo-700 text-white"
           >
-            Schedule Free Consultation
+            Book a free 15-min call
           </Button>
         </div>
       </article>

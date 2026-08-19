@@ -265,4 +265,326 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+// ==================== IN-MEMORY STORAGE ====================
+// Used automatically when DATABASE_URL is unset so the dev server can boot
+// without Postgres. Data lives only for the lifetime of the process.
+
+export class MemStorage implements IStorage {
+  private users: User[] = [];
+  private contacts: Contact[] = [];
+  private newsletters: Newsletter[] = [];
+  private files: FileRecord[] = [];
+  private leads: Lead[] = [];
+  private deals: Deal[] = [];
+  private activities: Activity[] = [];
+  private tasks: Task[] = [];
+  private communications: Communication[] = [];
+
+  private ids = {
+    users: 0,
+    contacts: 0,
+    newsletters: 0,
+    files: 0,
+    leads: 0,
+    deals: 0,
+    activities: 0,
+    tasks: 0,
+    communications: 0,
+  };
+
+  // Users
+  async getUser(id: number): Promise<User | undefined> {
+    return this.users.find((u) => u.id === id);
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return this.users.find((u) => u.username === username);
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const user: User = { id: ++this.ids.users, ...insertUser };
+    this.users.push(user);
+    return user;
+  }
+
+  // Contacts
+  async createContact(insertContact: InsertContact): Promise<Contact> {
+    const contact: Contact = {
+      id: ++this.ids.contacts,
+      name: insertContact.name,
+      email: insertContact.email,
+      company: insertContact.company ?? null,
+      phone: insertContact.phone ?? null,
+      message: insertContact.message,
+      createdAt: new Date(),
+    };
+    this.contacts.push(contact);
+    return contact;
+  }
+
+  async getContacts(): Promise<Contact[]> {
+    return [...this.contacts];
+  }
+
+  async deleteContact(id: number): Promise<boolean> {
+    const before = this.contacts.length;
+    this.contacts = this.contacts.filter((c) => c.id !== id);
+    return this.contacts.length < before;
+  }
+
+  // Newsletter
+  async subscribeNewsletter(insertNewsletter: InsertNewsletter): Promise<Newsletter> {
+    const existing = this.newsletters.find((n) => n.email === insertNewsletter.email);
+    if (existing) {
+      existing.isActive = true;
+      existing.subscribedAt = new Date();
+      return existing;
+    }
+    const newsletter: Newsletter = {
+      id: ++this.ids.newsletters,
+      email: insertNewsletter.email,
+      subscribedAt: new Date(),
+      isActive: true,
+    };
+    this.newsletters.push(newsletter);
+    return newsletter;
+  }
+
+  async getNewsletterSubscribers(): Promise<Newsletter[]> {
+    return this.newsletters.filter((n) => n.isActive);
+  }
+
+  // Files
+  async createFile(insertFile: InsertFile): Promise<FileRecord> {
+    const file: FileRecord = {
+      id: ++this.ids.files,
+      originalName: insertFile.originalName,
+      storedName: insertFile.storedName,
+      mimeType: insertFile.mimeType,
+      size: insertFile.size,
+      uploadedAt: new Date(),
+    };
+    this.files.push(file);
+    return file;
+  }
+
+  async getFiles(): Promise<FileRecord[]> {
+    return [...this.files];
+  }
+
+  async getFile(id: number): Promise<FileRecord | undefined> {
+    return this.files.find((f) => f.id === id);
+  }
+
+  async deleteFile(id: number): Promise<boolean> {
+    const before = this.files.length;
+    this.files = this.files.filter((f) => f.id !== id);
+    return this.files.length < before;
+  }
+
+  // Leads
+  async createLead(insertLead: InsertLead): Promise<Lead> {
+    const now = new Date();
+    const lead: Lead = {
+      id: ++this.ids.leads,
+      name: insertLead.name,
+      email: insertLead.email,
+      phone: insertLead.phone ?? null,
+      company: insertLead.company ?? null,
+      source: insertLead.source ?? "website",
+      aiSummary: insertLead.aiSummary ?? null,
+      industry: insertLead.industry ?? null,
+      companySize: insertLead.companySize ?? null,
+      estimatedBudget: insertLead.estimatedBudget ?? null,
+      urgency: insertLead.urgency ?? "medium",
+      painPoints: insertLead.painPoints ?? null,
+      status: insertLead.status ?? "new",
+      score: insertLead.score ?? 0,
+      tags: insertLead.tags ?? null,
+      assignedTo: insertLead.assignedTo ?? null,
+      originalMessage: insertLead.originalMessage ?? null,
+      createdAt: now,
+      updatedAt: now,
+      lastContactedAt: insertLead.lastContactedAt ?? null,
+      convertedAt: insertLead.convertedAt ?? null,
+    };
+    this.leads.push(lead);
+    return lead;
+  }
+
+  async getLeads(): Promise<Lead[]> {
+    return [...this.leads].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+
+  async getLead(id: number): Promise<Lead | undefined> {
+    return this.leads.find((l) => l.id === id);
+  }
+
+  async updateLead(id: number, updates: Partial<InsertLead>): Promise<Lead | undefined> {
+    const lead = this.leads.find((l) => l.id === id);
+    if (!lead) return undefined;
+    Object.assign(lead, updates, { updatedAt: new Date() });
+    return lead;
+  }
+
+  async deleteLead(id: number): Promise<boolean> {
+    const before = this.leads.length;
+    this.leads = this.leads.filter((l) => l.id !== id);
+    return this.leads.length < before;
+  }
+
+  // Deals
+  async createDeal(insertDeal: InsertDeal): Promise<Deal> {
+    const now = new Date();
+    const deal: Deal = {
+      id: ++this.ids.deals,
+      leadId: insertDeal.leadId ?? null,
+      title: insertDeal.title,
+      value: insertDeal.value ?? null,
+      currency: insertDeal.currency ?? "USD",
+      stage: insertDeal.stage ?? "lead",
+      probability: insertDeal.probability ?? 10,
+      aiPredictedClose: insertDeal.aiPredictedClose ?? null,
+      aiRecommendedAction: insertDeal.aiRecommendedAction ?? null,
+      aiRiskFlags: insertDeal.aiRiskFlags ?? null,
+      notes: insertDeal.notes ?? null,
+      lostReason: insertDeal.lostReason ?? null,
+      createdAt: now,
+      updatedAt: now,
+      expectedCloseDate: insertDeal.expectedCloseDate ?? null,
+      closedAt: insertDeal.closedAt ?? null,
+    };
+    this.deals.push(deal);
+    return deal;
+  }
+
+  async getDeals(): Promise<Deal[]> {
+    return [...this.deals].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+
+  async getDeal(id: number): Promise<Deal | undefined> {
+    return this.deals.find((d) => d.id === id);
+  }
+
+  async getDealsByLead(leadId: number): Promise<Deal[]> {
+    return this.deals.filter((d) => d.leadId === leadId);
+  }
+
+  async updateDeal(id: number, updates: Partial<InsertDeal>): Promise<Deal | undefined> {
+    const deal = this.deals.find((d) => d.id === id);
+    if (!deal) return undefined;
+    Object.assign(deal, updates, { updatedAt: new Date() });
+    return deal;
+  }
+
+  async deleteDeal(id: number): Promise<boolean> {
+    const before = this.deals.length;
+    this.deals = this.deals.filter((d) => d.id !== id);
+    return this.deals.length < before;
+  }
+
+  // Activities
+  async createActivity(insertActivity: InsertActivity): Promise<Activity> {
+    const activity: Activity = {
+      id: ++this.ids.activities,
+      leadId: insertActivity.leadId ?? null,
+      dealId: insertActivity.dealId ?? null,
+      type: insertActivity.type,
+      subject: insertActivity.subject ?? null,
+      description: insertActivity.description ?? null,
+      aiSummary: insertActivity.aiSummary ?? null,
+      sentiment: insertActivity.sentiment ?? null,
+      metadata: insertActivity.metadata ?? null,
+      createdAt: new Date(),
+      performedBy: insertActivity.performedBy ?? null,
+    };
+    this.activities.push(activity);
+    return activity;
+  }
+
+  async getActivities(leadId?: number, dealId?: number): Promise<Activity[]> {
+    let result = this.activities;
+    if (leadId) result = result.filter((a) => a.leadId === leadId);
+    else if (dealId) result = result.filter((a) => a.dealId === dealId);
+    return [...result].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+
+  // Tasks
+  async createTask(insertTask: InsertTask): Promise<Task> {
+    const task: Task = {
+      id: ++this.ids.tasks,
+      leadId: insertTask.leadId ?? null,
+      dealId: insertTask.dealId ?? null,
+      title: insertTask.title,
+      description: insertTask.description ?? null,
+      type: insertTask.type ?? "follow_up",
+      priority: insertTask.priority ?? "medium",
+      status: insertTask.status ?? "pending",
+      aiGenerated: insertTask.aiGenerated ?? false,
+      aiReason: insertTask.aiReason ?? null,
+      assignedTo: insertTask.assignedTo ?? null,
+      createdAt: new Date(),
+      dueDate: insertTask.dueDate ?? null,
+      completedAt: insertTask.completedAt ?? null,
+    };
+    this.tasks.push(task);
+    return task;
+  }
+
+  async getTasks(filters?: { status?: string; leadId?: number; dealId?: number }): Promise<Task[]> {
+    let result = this.tasks;
+    if (filters?.status) result = result.filter((t) => t.status === filters.status);
+    else if (filters?.leadId) result = result.filter((t) => t.leadId === filters.leadId);
+    else if (filters?.dealId) result = result.filter((t) => t.dealId === filters.dealId);
+    return [...result].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+
+  async updateTask(id: number, updates: Partial<InsertTask>): Promise<Task | undefined> {
+    const task = this.tasks.find((t) => t.id === id);
+    if (!task) return undefined;
+    Object.assign(task, updates);
+    return task;
+  }
+
+  async deleteTask(id: number): Promise<boolean> {
+    const before = this.tasks.length;
+    this.tasks = this.tasks.filter((t) => t.id !== id);
+    return this.tasks.length < before;
+  }
+
+  // Communications
+  async createCommunication(insertComm: InsertCommunication): Promise<Communication> {
+    const comm: Communication = {
+      id: ++this.ids.communications,
+      leadId: insertComm.leadId ?? null,
+      dealId: insertComm.dealId ?? null,
+      type: insertComm.type,
+      direction: insertComm.direction,
+      subject: insertComm.subject ?? null,
+      body: insertComm.body,
+      aiDraft: insertComm.aiDraft ?? false,
+      aiSuggestions: insertComm.aiSuggestions ?? null,
+      status: insertComm.status ?? "sent",
+      createdAt: new Date(),
+      sentAt: insertComm.sentAt ?? null,
+      readAt: insertComm.readAt ?? null,
+    };
+    this.communications.push(comm);
+    return comm;
+  }
+
+  async getCommunications(leadId?: number): Promise<Communication[]> {
+    const result = leadId
+      ? this.communications.filter((c) => c.leadId === leadId)
+      : this.communications;
+    return [...result].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+}
+
+export const storage: IStorage = process.env.DATABASE_URL
+  ? new DatabaseStorage()
+  : new MemStorage();
+
+if (!process.env.DATABASE_URL) {
+  console.log("[storage] DATABASE_URL not set — using in-memory storage (data resets on restart)");
+}
