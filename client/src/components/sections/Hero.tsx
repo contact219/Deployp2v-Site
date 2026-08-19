@@ -179,7 +179,7 @@ export default function Hero() {
           <div>
             <p {...reveal("0ms")}>
               <span className="eyebrow text-mist-muted">
-                AI automation for small business · Wylie, TX
+                Possibility to Velocity — AI automation for small business · Wylie, TX
               </span>
             </p>
 
