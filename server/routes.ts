@@ -10,33 +10,26 @@ import crypto from "crypto";
 import { enrichLead, generateFollowUpTask, generateEmailDraft, analyzeDeal } from "./ai-service";
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-const ALLOWED_MIME_TYPES = [
-  'application/pdf',
-  'image/jpeg',
-  'image/png',
-  'image/gif',
-  'image/webp',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'application/vnd.ms-excel',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  'text/plain',
-  'text/csv',
-  'audio/mpeg',
-  'audio/wav',
-  'audio/x-wav',
-  'audio/mp4',
-  'audio/aac',
-  'audio/ogg',
-  'audio/flac',
-  'audio/webm',
-  'video/mp4',
-  'video/quicktime',
-  'video/x-msvideo',
-  'video/webm',
-  'video/x-matroska',
-  'video/mpeg'
-];
+// Admin-only file store (token-gated): accept anything except executable /
+// script content. Files are stored under random hex names and served back
+// as attachments, so the risk being screened here is a stored executable,
+// not markup injection.
+const BLOCKED_MIME_TYPES = new Set([
+  'application/x-msdownload',
+  'application/x-msdos-program',
+  'application/x-dosexec',
+  'application/x-executable',
+  'application/x-mach-binary',
+  'application/x-elf',
+  'application/x-sh',
+  'application/x-csh',
+  'application/x-bat',
+  'application/x-msi',
+  'application/java-archive',
+  'application/vnd.microsoft.portable-executable',
+]);
+const BLOCKED_EXTENSIONS =
+  /\.(exe|msi|bat|cmd|com|scr|pif|dll|sh|ps1|vbs|js|jar|apk|app|deb|rpm)$/i;
 const MAX_FILE_SIZE = 2 * 1024 * 1024 * 1024; // 2GB
 
 const uploadsDir = path.join(process.cwd(), 'uploads');
@@ -59,10 +52,10 @@ const upload = multer({
   storage: storageConfig,
   limits: { fileSize: MAX_FILE_SIZE },
   fileFilter: (req, file, cb) => {
-    if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
-      cb(null, true);
+    if (BLOCKED_MIME_TYPES.has(file.mimetype) || BLOCKED_EXTENSIONS.test(file.originalname)) {
+      cb(new Error(`Executable files are not allowed (${file.originalname})`));
     } else {
-      cb(new Error('File type not allowed'));
+      cb(null, true);
     }
   }
 });
@@ -246,7 +239,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // File upload endpoint (admin only)
-  app.post("/api/files", verifyAdmin, upload.single('file'), async (req, res) => {
+  app.post("/api/files", verifyAdmin, (req: Request, res: Response, next: NextFunction) => {
+    // Surface multer rejections (blocked type, size cap) as a 400 with the
+    // real reason instead of a generic 500.
+    upload.single('file')(req, res, (err: unknown) => {
+      if (err) {
+        const message = err instanceof Error ? err.message : "Upload rejected";
+        return res.status(400).json({ success: false, error: message });
+      }
+      next();
+    });
+  }, async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ success: false, error: "No file uploaded" });

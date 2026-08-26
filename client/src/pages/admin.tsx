@@ -206,12 +206,14 @@ export default function Admin() {
           description: `${file.name} has been uploaded successfully`,
         });
       } else {
-        throw new Error(result.error);
+        throw new Error(result.error || `Upload failed (HTTP ${response.status})`);
       }
     } catch (error) {
       toast({
         title: "Upload Failed",
-        description: "Failed to upload file. Please try again.",
+        description: error instanceof Error && error.message
+          ? error.message
+          : "Failed to upload file. Please try again.",
         variant: "destructive",
       });
     } finally {
