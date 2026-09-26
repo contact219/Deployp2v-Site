@@ -49,6 +49,14 @@ export default function ROICalculator() {
       ...prev,
       [field]: value
     }));
+    // The results (and the message sent to /api/contact) recompute live from
+    // `inputs`, so a stale "thanks, we've got it" confirmation would be shown
+    // against numbers that were never actually submitted. Clear it so the
+    // visitor can submit the revised projection.
+    if (leadSubmitted || leadError) {
+      setLeadSubmitted(false);
+      setLeadError('');
+    }
   };
 
   const calculateROI = () => {
