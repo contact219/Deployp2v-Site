@@ -11,29 +11,45 @@ import { enrichLead, generateFollowUpTask, generateEmailDraft, analyzeDeal } fro
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
-// Admin sessions: login exchanges the password for a random opaque token
-// instead of the client reusing the password itself as a bearer credential
-// forever. Tokens expire and are held in memory only (not derived from the
-// password), so leaking one (XSS, logs) doesn't leak the admin password and
-// doesn't grant indefinite access.
+// Admin sessions: login exchanges the password for a random, expiring
+// token instead of the client reusing the password itself as a bearer
+// credential forever — leaking a token (XSS, logs) then doesn't leak the
+// admin password or grant indefinite access.
+//
+// Tokens are self-verifying (random value + expiry + HMAC signed with
+// ADMIN_PASSWORD) rather than looked up in an in-memory map: this repo's
+// deploy workflow restarts the server process on every push to main, which
+// would otherwise silently invalidate every session (and its advertised
+// 12h TTL) on every deploy. A revocation set is still kept for immediate
+// logout, but it's a best-effort addition on top of the real (stateless)
+// expiry check, not what makes a token valid — so it's fine that the set
+// itself doesn't survive a restart.
 const SESSION_TTL_MS = 12 * 60 * 60 * 1000; // 12 hours
-const adminSessions = new Map<string, number>(); // token -> expiry (ms epoch)
+const revokedSessions = new Set<string>();
+
+function signSessionPayload(payload: string): string {
+  return crypto.createHmac("sha256", ADMIN_PASSWORD || "").update(payload).digest("hex");
+}
 
 function issueAdminSession(): string {
-  const token = crypto.randomBytes(32).toString("hex");
-  adminSessions.set(token, Date.now() + SESSION_TTL_MS);
-  return token;
+  const random = crypto.randomBytes(16).toString("hex");
+  const expiry = Date.now() + SESSION_TTL_MS;
+  const payload = `${random}.${expiry}`;
+  return `${payload}.${signSessionPayload(payload)}`;
 }
 
 function isValidAdminSession(token: string | undefined | null): boolean {
-  if (!token) return false;
-  const expiry = adminSessions.get(token);
-  if (!expiry) return false;
-  if (Date.now() > expiry) {
-    adminSessions.delete(token);
-    return false;
-  }
-  return true;
+  if (!token || !ADMIN_PASSWORD || revokedSessions.has(token)) return false;
+
+  const parts = token.split(".");
+  if (parts.length !== 3) return false;
+  const [random, expiryStr, signature] = parts;
+  const expiry = Number(expiryStr);
+  if (!Number.isFinite(expiry) || Date.now() > expiry) return false;
+
+  const expected = Buffer.from(signSessionPayload(`${random}.${expiryStr}`), "hex");
+  const provided = Buffer.from(signature, "hex");
+  return expected.length === provided.length && crypto.timingSafeEqual(expected, provided);
 }
 
 // Constant-time password check: compares fixed-length SHA-256 digests so
@@ -154,10 +170,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Revokes a session token immediately rather than waiting out its TTL.
+  // Best-effort: the revocation set doesn't survive a process restart, but
+  // the token's own signed expiry (see isValidAdminSession) still bounds it.
   app.post("/api/admin/logout", (req, res) => {
     const adminToken = req.headers['x-admin-token'];
     if (typeof adminToken === 'string') {
-      adminSessions.delete(adminToken);
+      revokedSessions.add(adminToken);
     }
     res.json({ success: true });
   });
