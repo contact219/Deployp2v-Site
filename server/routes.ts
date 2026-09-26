@@ -10,6 +10,63 @@ import crypto from "crypto";
 import { enrichLead, generateFollowUpTask, generateEmailDraft, analyzeDeal } from "./ai-service";
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+
+// Admin sessions: login exchanges the password for a random opaque token
+// instead of the client reusing the password itself as a bearer credential
+// forever. Tokens expire and are held in memory only (not derived from the
+// password), so leaking one (XSS, logs) doesn't leak the admin password and
+// doesn't grant indefinite access.
+const SESSION_TTL_MS = 12 * 60 * 60 * 1000; // 12 hours
+const adminSessions = new Map<string, number>(); // token -> expiry (ms epoch)
+
+function issueAdminSession(): string {
+  const token = crypto.randomBytes(32).toString("hex");
+  adminSessions.set(token, Date.now() + SESSION_TTL_MS);
+  return token;
+}
+
+function isValidAdminSession(token: string | undefined | null): boolean {
+  if (!token) return false;
+  const expiry = adminSessions.get(token);
+  if (!expiry) return false;
+  if (Date.now() > expiry) {
+    adminSessions.delete(token);
+    return false;
+  }
+  return true;
+}
+
+// Constant-time password check: compares fixed-length SHA-256 digests so
+// timing doesn't leak the password's length or a byte-by-byte prefix match.
+function safeCompare(a: string, b: string): boolean {
+  const digestA = crypto.createHash("sha256").update(a).digest();
+  const digestB = crypto.createHash("sha256").update(b).digest();
+  return crypto.timingSafeEqual(digestA, digestB);
+}
+
+// Basic brute-force throttling on the login endpoint, keyed by IP.
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+const LOGIN_MAX_ATTEMPTS = 8;
+const loginAttempts = new Map<string, { count: number; resetAt: number }>();
+
+function isLoginRateLimited(key: string): boolean {
+  const entry = loginAttempts.get(key);
+  if (!entry || Date.now() > entry.resetAt) return false;
+  return entry.count >= LOGIN_MAX_ATTEMPTS;
+}
+
+function recordLoginFailure(key: string): void {
+  const entry = loginAttempts.get(key);
+  if (!entry || Date.now() > entry.resetAt) {
+    loginAttempts.set(key, { count: 1, resetAt: Date.now() + LOGIN_WINDOW_MS });
+  } else {
+    entry.count += 1;
+  }
+}
+
+function clearLoginFailures(key: string): void {
+  loginAttempts.delete(key);
+}
 // Admin-only file store (token-gated): accept anything except executable /
 // script content. Files are stored under random hex names and served back
 // as attachments, so the risk being screened here is a stored executable,
@@ -62,20 +119,47 @@ const upload = multer({
 
 const verifyAdmin = (req: Request, res: Response, next: NextFunction) => {
   const adminToken = req.headers['x-admin-token'];
-  if (!ADMIN_PASSWORD || adminToken !== ADMIN_PASSWORD) {
+  if (typeof adminToken !== 'string' || !isValidAdminSession(adminToken)) {
     return res.status(401).json({ success: false, error: 'Unauthorized' });
   }
   next();
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Admin login check — password lives in the ADMIN_PASSWORD env var only
+  // Admin login: verifies the password (env var only) with a constant-time
+  // comparison, then issues a random, expiring session token — the token,
+  // not the password, is what the client stores and sends back on later
+  // requests (see verifyAdmin).
   app.post("/api/admin/login", (req, res) => {
-    const { password } = req.body ?? {};
-    if (ADMIN_PASSWORD && password === ADMIN_PASSWORD) {
-      return res.json({ success: true });
+    const rateLimitKey = req.ip ?? "unknown";
+    if (isLoginRateLimited(rateLimitKey)) {
+      return res.status(429).json({ success: false, error: "Too many attempts. Try again later." });
     }
+
+    const { password } = req.body ?? {};
+    if (ADMIN_PASSWORD && typeof password === "string" && safeCompare(password, ADMIN_PASSWORD)) {
+      clearLoginFailures(rateLimitKey);
+      const token = issueAdminSession();
+      return res.json({ success: true, token });
+    }
+
+    recordLoginFailure(rateLimitKey);
     res.status(401).json({ success: false, error: "Incorrect password" });
+  });
+
+  // Lets the client re-validate a stored session token (e.g. on page load)
+  // without ever resending the password.
+  app.get("/api/admin/session", verifyAdmin, (_req, res) => {
+    res.json({ success: true });
+  });
+
+  // Revokes a session token immediately rather than waiting out its TTL.
+  app.post("/api/admin/logout", (req, res) => {
+    const adminToken = req.headers['x-admin-token'];
+    if (typeof adminToken === 'string') {
+      adminSessions.delete(adminToken);
+    }
+    res.json({ success: true });
   });
 
   // Contact form submission endpoint

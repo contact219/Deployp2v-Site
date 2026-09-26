@@ -54,11 +54,23 @@ export default function Admin() {
   const { toast } = useToast();
   const queryClientLocal = useQueryClient();
 
-  const checkPassword = async (candidate: string): Promise<boolean> => {
+  // Exchanges the password for a session token. The token is what gets
+  // stored and reused, never the password itself.
+  const login = async (candidate: string): Promise<string | null> => {
     const res = await fetch('/api/admin/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password: candidate }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.token ?? null;
+  };
+
+  // Validates a previously-issued session token without ever resending the password.
+  const validateSession = async (token: string): Promise<boolean> => {
+    const res = await fetch('/api/admin/session', {
+      headers: { 'x-admin-token': token },
     });
     return res.ok;
   };
@@ -67,7 +79,7 @@ export default function Admin() {
   useEffect(() => {
     const savedToken = localStorage.getItem('adminToken');
     if (!savedToken) return;
-    checkPassword(savedToken)
+    validateSession(savedToken)
       .then((ok) => {
         if (ok) {
           setIsAuthenticated(true);
@@ -80,9 +92,9 @@ export default function Admin() {
   }, []);
 
   const handleLogin = async () => {
-    let ok = false;
+    let token: string | null = null;
     try {
-      ok = await checkPassword(password);
+      token = await login(password);
     } catch {
       toast({
         title: "Login Failed",
@@ -91,10 +103,11 @@ export default function Admin() {
       });
       return;
     }
-    if (ok) {
+    if (token) {
       setIsAuthenticated(true);
-      setAdminToken(password);
-      localStorage.setItem('adminToken', password);
+      setAdminToken(token);
+      localStorage.setItem('adminToken', token);
+      setPassword('');
       toast({
         title: "Login Successful",
         description: "Welcome to the admin dashboard",
@@ -109,6 +122,13 @@ export default function Admin() {
   };
 
   const handleLogout = () => {
+    const token = localStorage.getItem('adminToken');
+    if (token) {
+      fetch('/api/admin/logout', {
+        method: 'POST',
+        headers: { 'x-admin-token': token },
+      }).catch(() => {});
+    }
     setIsAuthenticated(false);
     setPassword('');
     setAdminToken('');
