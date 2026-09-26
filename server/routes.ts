@@ -1,7 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContactSchema, insertNewsletterSchema, insertLeadSchema, insertDealSchema, insertActivitySchema, insertTaskSchema, insertCommunicationSchema } from "@shared/schema";
+import { insertContactSchema, insertNewsletterSchema, insertLeadSchema, insertDealSchema, insertActivitySchema, insertTaskSchema, insertCommunicationSchema, updateLeadSchema, updateDealSchema, updateTaskSchema } from "@shared/schema";
 import { z } from "zod";
 import multer from "multer";
 import path from "path";
@@ -380,7 +380,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ success: false, error: "File not found on disk" });
       }
 
-      res.setHeader('Content-Disposition', `attachment; filename="${file.originalName}"`);
+      // Strip characters that could break out of the quoted filename
+      // parameter (the original name is attacker-supplied at upload time).
+      const safeName = file.originalName.replace(/[\r\n"]/g, '_');
+      res.setHeader('Content-Disposition', `attachment; filename="${safeName}"`);
       res.setHeader('Content-Type', file.mimeType);
       fs.createReadStream(filePath).pipe(res);
     } catch (error) {
@@ -498,13 +501,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/crm/leads/:id", verifyAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const lead = await storage.updateLead(id, req.body);
+      const updates = updateLeadSchema.parse(req.body);
+      const lead = await storage.updateLead(id, updates);
       if (!lead) {
         return res.status(404).json({ success: false, error: "Lead not found" });
       }
       res.json({ success: true, lead });
     } catch (error) {
-      res.status(500).json({ success: false, error: "Failed to update lead" });
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ success: false, error: "Validation failed", details: error.errors });
+      } else {
+        res.status(500).json({ success: false, error: "Failed to update lead" });
+      }
     }
   });
 
@@ -666,22 +674,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ success: false, error: "Deal not found" });
       }
 
-      const deal = await storage.updateDeal(id, req.body);
+      const updates = updateDealSchema.parse(req.body);
+      const deal = await storage.updateDeal(id, updates);
 
       // Log stage change
-      if (req.body.stage && req.body.stage !== existingDeal.stage) {
+      if (updates.stage && updates.stage !== existingDeal.stage) {
         await storage.createActivity({
           leadId: existingDeal.leadId || undefined,
           dealId: id,
           type: "stage_change",
           subject: "Deal Stage Changed",
-          description: `Stage changed from ${existingDeal.stage} to ${req.body.stage}`
+          description: `Stage changed from ${existingDeal.stage} to ${updates.stage}`
         });
       }
 
       res.json({ success: true, deal });
     } catch (error) {
-      res.status(500).json({ success: false, error: "Failed to update deal" });
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ success: false, error: "Validation failed", details: error.errors });
+      } else {
+        res.status(500).json({ success: false, error: "Failed to update deal" });
+      }
     }
   });
 
@@ -794,13 +807,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/crm/tasks/:id", verifyAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const task = await storage.updateTask(id, req.body);
+      const updates = updateTaskSchema.parse(req.body);
+      const task = await storage.updateTask(id, updates);
       if (!task) {
         return res.status(404).json({ success: false, error: "Task not found" });
       }
       res.json({ success: true, task });
     } catch (error) {
-      res.status(500).json({ success: false, error: "Failed to update task" });
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ success: false, error: "Validation failed", details: error.errors });
+      } else {
+        res.status(500).json({ success: false, error: "Failed to update task" });
+      }
     }
   });
 

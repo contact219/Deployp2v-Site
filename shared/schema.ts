@@ -238,6 +238,13 @@ export const insertCommunicationSchema = createInsertSchema(communications).omit
   createdAt: true,
 });
 
+// Update schemas: same shape as insert, but every field optional and with
+// id/createdAt/updatedAt stripped, so a PATCH body can't overwrite those or
+// any field outside the table's own columns (mass-assignment guard).
+export const updateLeadSchema = insertLeadSchema.partial();
+export const updateDealSchema = insertDealSchema.partial();
+export const updateTaskSchema = insertTaskSchema.partial();
+
 // CRM Types
 export type InsertLead = z.infer<typeof insertLeadSchema>;
 export type Lead = typeof leads.$inferSelect;
