@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLocation } from 'wouter';
-import { ArrowLeft, Calculator, TrendingUp, DollarSign, Clock, Users } from 'lucide-react';
+import { ArrowLeft, Calculator, TrendingUp, DollarSign, Clock, Users, CheckCircle } from 'lucide-react';
 
 interface CalculatorInputs {
   industry: string;
@@ -39,12 +39,24 @@ export default function ROICalculator() {
     orderProcessingTime: 0
   });
   const [showResults, setShowResults] = useState(false);
+  const [leadForm, setLeadForm] = useState({ name: '', email: '' });
+  const [leadSubmitting, setLeadSubmitting] = useState(false);
+  const [leadSubmitted, setLeadSubmitted] = useState(false);
+  const [leadError, setLeadError] = useState('');
 
   const handleInputChange = (field: keyof CalculatorInputs, value: string | number) => {
     setInputs(prev => ({
       ...prev,
       [field]: value
     }));
+    // The results (and the message sent to /api/contact) recompute live from
+    // `inputs`, so a stale "thanks, we've got it" confirmation would be shown
+    // against numbers that were never actually submitted. Clear it so the
+    // visitor can submit the revised projection.
+    if (leadSubmitted || leadError) {
+      setLeadSubmitted(false);
+      setLeadError('');
+    }
   };
 
   const calculateROI = () => {
@@ -101,6 +113,39 @@ export default function ROICalculator() {
   const handleCalculate = () => {
     if (inputs.industry && inputs.employees && inputs.monthlyRevenue > 0) {
       setShowResults(true);
+    }
+  };
+
+  // Sends the calculated projection to the same /api/contact endpoint the
+  // main contact form uses, so this becomes a real, trackable lead in the
+  // admin/CRM pipeline instead of the calculator being a dead end.
+  const handleLeadSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!results) return;
+    setLeadSubmitting(true);
+    setLeadError('');
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: leadForm.name,
+          email: leadForm.email,
+          company: null,
+          phone: null,
+          message: `[ROI Calculator lead]\nIndustry: ${inputs.industry}\nEmployees: ${inputs.employees}\nMonthly revenue: $${inputs.monthlyRevenue.toLocaleString()}\nProjected year-one ROI: ${results.yearOneROI.toFixed(0)}%\nProjected monthly savings: $${results.monthlySavings.toLocaleString()}\nPayback period: ${results.paybackMonths.toFixed(1)} months`,
+        }),
+      });
+      if (response.ok) {
+        setLeadSubmitted(true);
+      } else {
+        const data = await response.json().catch(() => ({}));
+        setLeadError(data.error || 'Something went wrong. Please try again.');
+      }
+    } catch {
+      setLeadError('Network error. Please try again.');
+    } finally {
+      setLeadSubmitting(false);
     }
   };
 
@@ -305,12 +350,44 @@ export default function ROICalculator() {
                   </div>
                 </div>
 
-                <Button 
-                  onClick={() => setLocation('/')}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
-                >
-                  Get Your Free Consultation
-                </Button>
+                {leadSubmitted ? (
+                  <div className="bg-green-900/20 border border-green-700 rounded-lg p-4 text-center">
+                    <CheckCircle className="w-8 h-8 text-green-400 mx-auto mb-2" />
+                    <p className="text-white font-semibold">Thanks, {leadForm.name.split(' ')[0] || 'there'}!</p>
+                    <p className="text-sm text-gray-300">We've got your projection and will reach out shortly to talk through it.</p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleLeadSubmit} className="space-y-3">
+                    {leadError && (
+                      <div className="bg-red-900/20 border border-red-700 text-red-300 text-sm rounded-lg px-3 py-2">
+                        {leadError}
+                      </div>
+                    )}
+                    <p className="text-sm text-gray-300">Want us to walk through these numbers with you?</p>
+                    <Input
+                      required
+                      placeholder="Your name"
+                      value={leadForm.name}
+                      onChange={(e) => setLeadForm((prev) => ({ ...prev, name: e.target.value }))}
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
+                    <Input
+                      required
+                      type="email"
+                      placeholder="Your email"
+                      value={leadForm.email}
+                      onChange={(e) => setLeadForm((prev) => ({ ...prev, email: e.target.value }))}
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
+                    <Button
+                      type="submit"
+                      disabled={leadSubmitting}
+                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+                    >
+                      {leadSubmitting ? 'Sending...' : 'Get Your Free Consultation'}
+                    </Button>
+                  </form>
+                )}
               </CardContent>
             </Card>
           )}
@@ -322,17 +399,17 @@ export default function ROICalculator() {
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">Ready to Start Saving?</h3>
                 <p className="text-gray-300 mb-6">
-                  These projections are based on typical results from similar businesses. 
+                  These projections are based on typical results from similar businesses.
                   Your actual savings may vary based on implementation and usage.
                 </p>
                 <div className="flex justify-center space-x-4">
-                  <Button 
-                    onClick={() => setLocation('/')}
+                  <Button
+                    onClick={() => setLocation('/contact')}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white"
                   >
                     Book a free 15-min call
                   </Button>
-                  <Button 
+                  <Button
                     onClick={() => setLocation('/case-studies')}
                     variant="outline"
                     className="text-indigo-400 border-indigo-400 hover:bg-indigo-400 hover:text-white"
