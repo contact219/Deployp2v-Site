@@ -91,8 +91,6 @@ const BLOG_FILES = [
   'roi-of-automation-local-business.md',
   'ai-reduce-food-waste-restaurant.md',
   'automating-appointment-scheduling.md',
-  '5-ways-ai-reduce-food-waste.md',
-  'reduce-food-waste-ai.md',
   'ai-marketing-on-a-budget-strategies-that-actually-work.md',
   'how-ai-chatbots-are-revolutionizing-customer-service.md',
   'how-to-choose-the-right-ai-tools-for-your-business-size.md',
