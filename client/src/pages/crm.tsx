@@ -501,7 +501,7 @@ export default function CRM() {
                         <div className="flex items-center gap-3 mb-2">
                           <h3 className="font-semibold text-lg text-white">{lead.name}</h3>
                           <Badge variant="outline" className="text-xs">
-                            Score: {lead.score || 50}
+                            Score: {lead.score ?? 50}
                           </Badge>
                           <Badge className={`${
                             lead.status === "new" ? "bg-blue-600" :
