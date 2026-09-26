@@ -1,7 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContactSchema, insertNewsletterSchema, insertLeadSchema, insertDealSchema, insertActivitySchema, insertTaskSchema, insertCommunicationSchema } from "@shared/schema";
+import { insertContactSchema, insertNewsletterSchema, insertLeadSchema, insertDealSchema, insertActivitySchema, insertTaskSchema, insertCommunicationSchema, updateLeadSchema, updateDealSchema, updateTaskSchema } from "@shared/schema";
 import { z } from "zod";
 import multer from "multer";
 import path from "path";
@@ -10,6 +10,79 @@ import crypto from "crypto";
 import { enrichLead, generateFollowUpTask, generateEmailDraft, analyzeDeal } from "./ai-service";
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+
+// Admin sessions: login exchanges the password for a random, expiring
+// token instead of the client reusing the password itself as a bearer
+// credential forever — leaking a token (XSS, logs) then doesn't leak the
+// admin password or grant indefinite access.
+//
+// Tokens are self-verifying (random value + expiry + HMAC signed with
+// ADMIN_PASSWORD) rather than looked up in an in-memory map: this repo's
+// deploy workflow restarts the server process on every push to main, which
+// would otherwise silently invalidate every session (and its advertised
+// 12h TTL) on every deploy. A revocation set is still kept for immediate
+// logout, but it's a best-effort addition on top of the real (stateless)
+// expiry check, not what makes a token valid — so it's fine that the set
+// itself doesn't survive a restart.
+const SESSION_TTL_MS = 12 * 60 * 60 * 1000; // 12 hours
+const revokedSessions = new Set<string>();
+
+function signSessionPayload(payload: string): string {
+  return crypto.createHmac("sha256", ADMIN_PASSWORD || "").update(payload).digest("hex");
+}
+
+function issueAdminSession(): string {
+  const random = crypto.randomBytes(16).toString("hex");
+  const expiry = Date.now() + SESSION_TTL_MS;
+  const payload = `${random}.${expiry}`;
+  return `${payload}.${signSessionPayload(payload)}`;
+}
+
+function isValidAdminSession(token: string | undefined | null): boolean {
+  if (!token || !ADMIN_PASSWORD || revokedSessions.has(token)) return false;
+
+  const parts = token.split(".");
+  if (parts.length !== 3) return false;
+  const [random, expiryStr, signature] = parts;
+  const expiry = Number(expiryStr);
+  if (!Number.isFinite(expiry) || Date.now() > expiry) return false;
+
+  const expected = Buffer.from(signSessionPayload(`${random}.${expiryStr}`), "hex");
+  const provided = Buffer.from(signature, "hex");
+  return expected.length === provided.length && crypto.timingSafeEqual(expected, provided);
+}
+
+// Constant-time password check: compares fixed-length SHA-256 digests so
+// timing doesn't leak the password's length or a byte-by-byte prefix match.
+function safeCompare(a: string, b: string): boolean {
+  const digestA = crypto.createHash("sha256").update(a).digest();
+  const digestB = crypto.createHash("sha256").update(b).digest();
+  return crypto.timingSafeEqual(digestA, digestB);
+}
+
+// Basic brute-force throttling on the login endpoint, keyed by IP.
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+const LOGIN_MAX_ATTEMPTS = 8;
+const loginAttempts = new Map<string, { count: number; resetAt: number }>();
+
+function isLoginRateLimited(key: string): boolean {
+  const entry = loginAttempts.get(key);
+  if (!entry || Date.now() > entry.resetAt) return false;
+  return entry.count >= LOGIN_MAX_ATTEMPTS;
+}
+
+function recordLoginFailure(key: string): void {
+  const entry = loginAttempts.get(key);
+  if (!entry || Date.now() > entry.resetAt) {
+    loginAttempts.set(key, { count: 1, resetAt: Date.now() + LOGIN_WINDOW_MS });
+  } else {
+    entry.count += 1;
+  }
+}
+
+function clearLoginFailures(key: string): void {
+  loginAttempts.delete(key);
+}
 // Admin-only file store (token-gated): accept anything except executable /
 // script content. Files are stored under random hex names and served back
 // as attachments, so the risk being screened here is a stored executable,
@@ -62,20 +135,49 @@ const upload = multer({
 
 const verifyAdmin = (req: Request, res: Response, next: NextFunction) => {
   const adminToken = req.headers['x-admin-token'];
-  if (!ADMIN_PASSWORD || adminToken !== ADMIN_PASSWORD) {
+  if (typeof adminToken !== 'string' || !isValidAdminSession(adminToken)) {
     return res.status(401).json({ success: false, error: 'Unauthorized' });
   }
   next();
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Admin login check — password lives in the ADMIN_PASSWORD env var only
+  // Admin login: verifies the password (env var only) with a constant-time
+  // comparison, then issues a random, expiring session token — the token,
+  // not the password, is what the client stores and sends back on later
+  // requests (see verifyAdmin).
   app.post("/api/admin/login", (req, res) => {
-    const { password } = req.body ?? {};
-    if (ADMIN_PASSWORD && password === ADMIN_PASSWORD) {
-      return res.json({ success: true });
+    const rateLimitKey = req.ip ?? "unknown";
+    if (isLoginRateLimited(rateLimitKey)) {
+      return res.status(429).json({ success: false, error: "Too many attempts. Try again later." });
     }
+
+    const { password } = req.body ?? {};
+    if (ADMIN_PASSWORD && typeof password === "string" && safeCompare(password, ADMIN_PASSWORD)) {
+      clearLoginFailures(rateLimitKey);
+      const token = issueAdminSession();
+      return res.json({ success: true, token });
+    }
+
+    recordLoginFailure(rateLimitKey);
     res.status(401).json({ success: false, error: "Incorrect password" });
+  });
+
+  // Lets the client re-validate a stored session token (e.g. on page load)
+  // without ever resending the password.
+  app.get("/api/admin/session", verifyAdmin, (_req, res) => {
+    res.json({ success: true });
+  });
+
+  // Revokes a session token immediately rather than waiting out its TTL.
+  // Best-effort: the revocation set doesn't survive a process restart, but
+  // the token's own signed expiry (see isValidAdminSession) still bounds it.
+  app.post("/api/admin/logout", (req, res) => {
+    const adminToken = req.headers['x-admin-token'];
+    if (typeof adminToken === 'string') {
+      revokedSessions.add(adminToken);
+    }
+    res.json({ success: true });
   });
 
   // Contact form submission endpoint
@@ -296,7 +398,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ success: false, error: "File not found on disk" });
       }
 
-      res.setHeader('Content-Disposition', `attachment; filename="${file.originalName}"`);
+      // Strip characters that could break out of the quoted filename
+      // parameter (the original name is attacker-supplied at upload time).
+      const safeName = file.originalName.replace(/[\r\n"]/g, '_');
+      res.setHeader('Content-Disposition', `attachment; filename="${safeName}"`);
       res.setHeader('Content-Type', file.mimeType);
       fs.createReadStream(filePath).pipe(res);
     } catch (error) {
@@ -414,13 +519,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/crm/leads/:id", verifyAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const lead = await storage.updateLead(id, req.body);
+      const updates = updateLeadSchema.parse(req.body);
+      const lead = await storage.updateLead(id, updates);
       if (!lead) {
         return res.status(404).json({ success: false, error: "Lead not found" });
       }
       res.json({ success: true, lead });
     } catch (error) {
-      res.status(500).json({ success: false, error: "Failed to update lead" });
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ success: false, error: "Validation failed", details: error.errors });
+      } else {
+        res.status(500).json({ success: false, error: "Failed to update lead" });
+      }
     }
   });
 
@@ -582,22 +692,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ success: false, error: "Deal not found" });
       }
 
-      const deal = await storage.updateDeal(id, req.body);
+      const updates = updateDealSchema.parse(req.body);
+      const deal = await storage.updateDeal(id, updates);
 
       // Log stage change
-      if (req.body.stage && req.body.stage !== existingDeal.stage) {
+      if (updates.stage && updates.stage !== existingDeal.stage) {
         await storage.createActivity({
           leadId: existingDeal.leadId || undefined,
           dealId: id,
           type: "stage_change",
           subject: "Deal Stage Changed",
-          description: `Stage changed from ${existingDeal.stage} to ${req.body.stage}`
+          description: `Stage changed from ${existingDeal.stage} to ${updates.stage}`
         });
       }
 
       res.json({ success: true, deal });
     } catch (error) {
-      res.status(500).json({ success: false, error: "Failed to update deal" });
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ success: false, error: "Validation failed", details: error.errors });
+      } else {
+        res.status(500).json({ success: false, error: "Failed to update deal" });
+      }
     }
   });
 
@@ -710,13 +825,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/crm/tasks/:id", verifyAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const task = await storage.updateTask(id, req.body);
+      const updates = updateTaskSchema.parse(req.body);
+      const task = await storage.updateTask(id, updates);
       if (!task) {
         return res.status(404).json({ success: false, error: "Task not found" });
       }
       res.json({ success: true, task });
     } catch (error) {
-      res.status(500).json({ success: false, error: "Failed to update task" });
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ success: false, error: "Validation failed", details: error.errors });
+      } else {
+        res.status(500).json({ success: false, error: "Failed to update task" });
+      }
     }
   });
 
