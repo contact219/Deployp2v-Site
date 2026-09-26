@@ -20,19 +20,43 @@ const BLOG_TOPICS = [
   'Customer Data Analytics: Making Smarter Decisions with AI'
 ];
 
+const FALLBACK_TOPIC = 'AI Innovation Tips for Small Business Owners';
+
+function normalizeTitle(title) {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+// Reads each existing post's own frontmatter `title`, not its filename.
+// The model picks its own slug wording independently of the requested
+// topic on every run, so two runs of the *same* topic can end up as
+// differently-slugged files — a slug-substring check never catches that
+// (this is exactly how "5 Ways AI Can Help Your Restaurant Reduce Food
+// Waste" ended up published three times under three different slugs).
+function getExistingTitles(blogDir) {
+  const files = fs.existsSync(blogDir)
+    ? fs.readdirSync(blogDir).filter(f => f.endsWith('.md'))
+    : [];
+  const titles = new Set();
+  for (const file of files) {
+    const raw = fs.readFileSync(path.join(blogDir, file), 'utf-8');
+    const match = raw.match(/^title:\s*"?(.*?)"?\s*$/m);
+    if (match) titles.add(normalizeTitle(match[1]));
+  }
+  return titles;
+}
+
 async function generateBlogPost() {
   const blogDir = path.join(__dirname, '../client/public/content/blog');
-  const existingPosts = fs.existsSync(blogDir)
-    ? fs.readdirSync(blogDir).map(f => f.replace('.md', ''))
-    : [];
+  const existingTitles = getExistingTitles(blogDir);
 
-  const availableTopics = BLOG_TOPICS.filter(topic => {
-    const slug = topic.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 50);
-    return !existingPosts.some(post => post.includes(slug.slice(0, 20)));
-  });
+  const availableTopics = BLOG_TOPICS.filter(topic => !existingTitles.has(normalizeTitle(topic)));
 
-  const topic = availableTopics[Math.floor(Math.random() * availableTopics.length)]
-    || 'AI Innovation Tips for Small Business Owners';
+  if (availableTopics.length === 0 && existingTitles.has(normalizeTitle(FALLBACK_TOPIC))) {
+    console.log('Every topic in BLOG_TOPICS (and the fallback topic) already has a published post. Skipping this run instead of generating another duplicate — add new topics to BLOG_TOPICS.');
+    return;
+  }
+
+  const topic = availableTopics[Math.floor(Math.random() * availableTopics.length)] || FALLBACK_TOPIC;
 
   console.log(`Generating blog post about: ${topic}`);
 
