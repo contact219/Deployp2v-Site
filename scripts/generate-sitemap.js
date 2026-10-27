@@ -11,11 +11,19 @@ function generateSitemap() {
   const blogDir = path.join(__dirname, '../client/public/content/blog');
   const industryDir = path.join(__dirname, '../client/public/content/industries');
 
+  const today = new Date().toISOString().split('T')[0];
+
   const urls = [
     { loc: '/', priority: '1.0', changefreq: 'weekly' },
-    { loc: '/blog', priority: '0.8', changefreq: 'daily' },
     { loc: '/industries', priority: '0.8', changefreq: 'weekly' },
+    { loc: '/case-studies', priority: '0.8', changefreq: 'monthly' },
+    { loc: '/blog', priority: '0.8', changefreq: 'weekly' },
+    { loc: '/faq', priority: '0.7', changefreq: 'monthly' },
     { loc: '/contact', priority: '0.7', changefreq: 'monthly' },
+    { loc: '/roi-calculator', priority: '0.6', changefreq: 'monthly' },
+    { loc: '/resources', priority: '0.6', changefreq: 'monthly' },
+    { loc: '/privacy-policy', priority: '0.2', changefreq: 'yearly' },
+    { loc: '/terms-of-service', priority: '0.2', changefreq: 'yearly' },
   ];
 
   // Add blog posts
@@ -43,8 +51,6 @@ function generateSitemap() {
       });
     }
   }
-
-  const today = new Date().toISOString().split('T')[0];
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

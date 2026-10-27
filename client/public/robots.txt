@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Admin and internal tools - nothing here belongs in search results
+User-agent: *
+Disallow: /admin
+Disallow: /admin/crm
+
+Sitemap: https://deployp2v.com/sitemap.xml

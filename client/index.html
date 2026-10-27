@@ -13,48 +13,51 @@
       rel="stylesheet"
     />
 
-    <!-- Google Search Console Verification -->
-    <!-- Replace YOUR_VERIFICATION_CODE with your actual verification code from Google Search Console -->
-    <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE" />
-    
-    <!-- SEO Meta Tags -->
+    <!-- Google Search Console: paste your verification code below, then remove
+         these comment markers. Verification is NOT currently in place, which is
+         why Search Console holds no data for this site.
+         <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE" /> -->
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!--seo:start-->
+    <!-- Homepage defaults. In production server/seo.ts replaces this entire
+         block per route so every page carries its own title, description and
+         canonical. Never hard-code a single canonical outside this block — a
+         site-wide canonical is what made every page look like a duplicate of
+         the homepage and kept the blog and industry pages out of Google. -->
     <title>DeployP2V — The busywork runs itself now. | AI Automation for Small Business, Wylie TX</title>
     <meta name="description" content="DeployP2V (Possibility to Velocity): The busywork runs itself now. Done-for-you AI agents that answer calls, chase invoices, and follow up on every lead — live in 5–7 days, from $149/mo. Wylie, TX." />
-    <meta name="keywords" content="AI solutions for small business, AI consulting Texas, AI automation, AI agents for SMBs, AI chatbots, AI workflow optimization, Wylie AI consultant, Dallas-Fort Worth AI services" />
-    <meta name="author" content="DeployP2V" />
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://deployp2v.com" />
-    
-    <!-- Open Graph Meta Tags -->
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://deployp2v.com/" />
     <meta property="og:title" content="DeployP2V — The busywork runs itself now." />
-    <meta property="og:description" content="Transform your small business with practical AI solutions. Expert consulting and implementation services for SMBs, local businesses, and entrepreneurs in Texas." />
+    <meta property="og:description" content="DeployP2V (Possibility to Velocity): The busywork runs itself now. Done-for-you AI agents that answer calls, chase invoices, and follow up on every lead — live in 5–7 days, from $149/mo. Wylie, TX." />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://deployp2v.com" />
-    <meta property="og:site_name" content="DeployP2V" />
+    <meta property="og:url" content="https://deployp2v.com/" />
     <meta property="og:image" content="https://deployp2v.com/og-image.png" />
-    
-    <!-- Twitter Card Meta Tags -->
+    <meta property="og:site_name" content="DeployP2V" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="DeployP2V — The busywork runs itself now." />
-    <meta name="twitter:description" content="Transform your small business with practical AI solutions. Expert services for SMBs, local businesses, and entrepreneurs." />
+    <meta name="twitter:description" content="Done-for-you AI agents that answer calls, chase invoices, and follow up on every lead — live in 5–7 days, from $149/mo. Wylie, TX." />
     <meta name="twitter:image" content="https://deployp2v.com/og-image.png" />
-    
-    <!-- Structured Data -->
+    <!--seo:end-->
+
+    <!-- Site-wide structured data. Street address is deliberately omitted:
+         DeployP2V publishes as a service-area business in Wylie, TX. -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
       "name": "DeployP2V",
       "alternateName": "DeployP2V — Possibility to Velocity",
-      "description": "AI solutions and consulting for small businesses",
+      "description": "Done-for-you AI automation for small business: AI agents that answer calls, chase invoices, and follow up on every lead.",
+      "slogan": "The busywork runs itself now.",
       "url": "https://deployp2v.com",
       "logo": "https://deployp2v.com/logo.png",
       "image": "https://deployp2v.com/og-image.png",
-      "telephone": "(214) 604-5735",
+      "telephone": "+1-214-604-5735",
       "email": "tsparks@deployp2v.com",
       "address": {
         "@type": "PostalAddress",
@@ -71,97 +74,73 @@
         "@type": "State",
         "name": "Texas"
       },
+      "areaServed": ["Wylie", "Allen", "Plano", "McKinney", "Rockwall", "Murphy", "Dallas-Fort Worth", "Texas"],
+      "priceRange": "$149-$499+",
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        "opens": "00:00",
+        "closes": "23:59"
+      },
       "hasOfferCatalog": {
         "@type": "OfferCatalog",
-        "name": "AI Solutions",
+        "name": "AI automation services",
         "itemListElement": [
           {
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
-              "name": "AI Customer Support Implementation",
-              "description": "Automated customer service solutions with intelligent chatbots and virtual assistants for 24/7 support"
+              "name": "AI agents and chatbots",
+              "description": "Missed-call text back, website chat that books jobs, instant quotes and FAQ answers, every lead logged"
             }
           },
           {
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
-              "name": "Predictive Analytics for Sales & Marketing",
-              "description": "AI-powered sales forecasting, customer insights, and personalized marketing campaigns"
+              "name": "Workflow automation",
+              "description": "Invoice chasing, review requests, appointment reminders, lead follow-up in 60 seconds"
             }
           },
           {
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
-              "name": "Automated Data Entry & Reporting",
-              "description": "Streamline data processing, invoice handling, and automated report generation"
+              "name": "Web development",
+              "description": "Sites that book jobs, with booking and quote forms wired into your calendar and CRM"
             }
           },
           {
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
-              "name": "AI-Enhanced CRM Systems",
-              "description": "Customer relationship management with AI features for lead prioritization and sentiment analysis"
+              "name": "AI design and content",
+              "description": "Logo and brand refresh, scheduled social posts, before/after job showcases, email campaigns"
             }
           },
           {
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
-              "name": "Automated Scheduling & Booking",
-              "description": "AI-optimized appointment scheduling and booking systems with pattern analysis"
+              "name": "Integrations",
+              "description": "QuickBooks and CRM sync, calendar and booking apps, Stripe and Square payments, Google Sheets"
             }
           },
           {
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
-              "name": "AI Market Research & Trend Analysis",
-              "description": "Automated market research, competitor analysis, and customer sentiment tracking"
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Internal Productivity Automation",
-              "description": "Custom web applications for document categorization, internal search, and workflow automation"
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "AI Content Creation",
-              "description": "Automated content generation and AI-powered writing tools for marketing and communications"
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "OCR and Document Processing",
-              "description": "Optical character recognition and intelligent document processing solutions"
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "AI Booking Systems",
-              "description": "Intelligent appointment booking and automated scheduling systems with AI optimization"
+              "name": "IT solutions",
+              "description": "Email and domain setup, backups, password and access cleanup, new-hire tech setup"
             }
           }
         ]
       },
-      "areaServed": ["Texas", "Dallas-Fort Worth", "Wylie", "Plano", "Richardson", "Garland", "Mesquite"],
-      "priceRange": "$149-$999",
-      "hasCredential": {
-        "@type": "EducationalOccupationalCredential",
-        "name": "AI Specialists and Business Consultants"
+      "makesOffer": {
+        "@type": "Offer",
+        "name": "Free 15-minute AI fit call",
+        "price": "0",
+        "priceCurrency": "USD"
       }
     }
     </script>
@@ -169,7 +148,5 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
-    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
   </body>
 </html>
