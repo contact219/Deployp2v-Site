@@ -5,6 +5,7 @@ import { createServer as createViteServer, createLogger } from "vite";
 import { type Server } from "http";
 import viteConfig from "../vite.config";
 import { nanoid } from "nanoid";
+import { createSeo } from "./seo";
 
 const viteLogger = createLogger();
 
@@ -76,10 +77,32 @@ export function serveStatic(app: Express) {
     );
   }
 
-  app.use(express.static(distPath));
+  const indexPath = path.resolve(distPath, "index.html");
+  const seo = createSeo(distPath);
 
-  // fall through to index.html if the file doesn't exist
-  app.use("*", (_req, res) => {
-    res.sendFile(path.resolve(distPath, "index.html"));
+  let shell: string | null = null;
+  const getShell = () => (shell ??= fs.readFileSync(indexPath, "utf-8"));
+
+  // Real files first — assets, robots.txt, sitemap.xml, content markdown.
+  // index:false so "/" falls through and gets its head tags injected too.
+  app.use(express.static(distPath, { index: false }));
+
+  // No mount path on purpose: app.use("*", fn) strips the matched prefix, so
+  // req.path would always read "/" and every route would get the homepage tags.
+  app.use((req, res) => {
+    const routeSeo = seo.resolve(req.path);
+
+    if (routeSeo?.redirect) {
+      return res.redirect(301, routeSeo.redirect);
+    }
+
+    const html = seo.inject(getShell(), routeSeo);
+
+    // A path this app doesn't serve gets a real 404 rather than a soft 200
+    // copy of the homepage, so search engines stop indexing junk URLs.
+    res
+      .status(routeSeo ? 200 : 404)
+      .set({ "Content-Type": "text/html; charset=utf-8" })
+      .send(html);
   });
 }
