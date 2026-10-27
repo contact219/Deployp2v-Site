@@ -8,6 +8,7 @@ import path from "path";
 import fs from "fs";
 import crypto from "crypto";
 import { enrichLead, generateFollowUpTask, generateEmailDraft, analyzeDeal } from "./ai-service";
+import { intakeWebsiteContact } from "./lead-intake";
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
@@ -186,6 +187,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = insertContactSchema.parse(req.body);
       const contact = await storage.createContact(validatedData);
       res.json({ success: true, contact });
+
+      // Alert the owner and route the lead into the CRM *after* responding, so
+      // a slow AI call or a notification outage can never break the submission.
+      void intakeWebsiteContact(contact).catch((err) => {
+        console.error("[lead-intake] unhandled failure:", err);
+      });
     } catch (error) {
       if (error instanceof z.ZodError) {
         res.status(400).json({ 
