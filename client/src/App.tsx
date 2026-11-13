@@ -12,6 +12,7 @@ import CRM from "@/pages/crm";
 import FAQ from "@/pages/faq";
 import CaseStudies from "@/pages/case-studies";
 import ROICalculator from "@/pages/roi-calculator";
+import AIReadinessAudit from "@/pages/ai-readiness-audit";
 import Resources from "@/pages/resources";
 import NotFound from "@/pages/not-found";
 
@@ -52,6 +53,7 @@ function Router() {
       <Route path="/industries/:slug" component={IndustryPage} />
       <Route path="/contact" component={Contact} />
       <Route path="/roi-calculator" component={ROICalculator} />
+      <Route path="/ai-readiness-audit" component={AIReadinessAudit} />
       <Route path="/resources" component={Resources} />
       <Route path="/privacy-policy" component={PrivacyPolicy} />
       <Route path="/terms-of-service" component={TermsOfService} />

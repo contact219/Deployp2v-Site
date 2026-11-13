@@ -64,6 +64,21 @@ const STATIC_ROUTES: Record<string, StaticRoute> = {
     description:
       "Work out what your business could save with AI automation. Enter your industry, team size, revenue and hours lost to manual tasks to get an ROI estimate.",
   },
+  "/ai-readiness-audit": {
+    title: "AI Readiness Audit for File Shares | DeployP2V",
+    description:
+      "Before you switch on Copilot or another AI assistant, find the overshared folders, exposed sensitive files and stale data on your file servers. Read-only scan, fixed price, fixes with rollback.",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      name: "AI Readiness Audit for File Shares",
+      serviceType: "File share permission and data exposure audit",
+      description:
+        "Read-only scan of Windows file servers, DFS and NAS shares that finds overshared folders, exposed sensitive files and stale data before an AI assistant rollout or Microsoft 365 migration.",
+      provider: { "@type": "Organization", name: "DeployP2V", url: SITE_URL },
+      areaServed: { "@type": "Country", name: "United States" },
+    },
+  },
   "/resources": {
     title: "Free AI Resources, Guides & Templates — DeployP2V",
     description:

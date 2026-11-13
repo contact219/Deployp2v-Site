@@ -20,6 +20,7 @@ const EXPLORE_LINKS: Array<{ label: string; hash: string }> = [
 
 const RESOURCE_LINKS: Array<{ label: string; href: string }> = [
   { label: "Blog", href: "/blog" },
+  { label: "AI readiness audit", href: "/ai-readiness-audit" },
   { label: "Case studies", href: "/case-studies" },
   { label: "Industries", href: "/industries" },
   { label: "ROI calculator", href: "/roi-calculator" },

@@ -18,6 +18,7 @@ function generateSitemap() {
     { loc: '/industries', priority: '0.8', changefreq: 'weekly' },
     { loc: '/case-studies', priority: '0.8', changefreq: 'monthly' },
     { loc: '/blog', priority: '0.8', changefreq: 'weekly' },
+    { loc: '/ai-readiness-audit', priority: '0.8', changefreq: 'monthly' },
     { loc: '/faq', priority: '0.7', changefreq: 'monthly' },
     { loc: '/contact', priority: '0.7', changefreq: 'monthly' },
     { loc: '/roi-calculator', priority: '0.6', changefreq: 'monthly' },

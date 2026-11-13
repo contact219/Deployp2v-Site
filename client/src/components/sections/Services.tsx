@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import {
   ArrowRight,
   Bot,
@@ -273,6 +274,18 @@ export default function Services() {
             </a>
           </div>
         </div>
+
+        {/* Second service line — the file share AI-readiness audit lives on
+            its own page (different buyer, different price). One quiet line:
+            no new band, no volt, so the homepage's band rhythm and its one
+            primary ask are untouched. */}
+        <p className="mt-6 text-base leading-relaxed text-ink-muted">
+          Rolling out Copilot or moving file shares to Microsoft 365?{" "}
+          <Link href="/ai-readiness-audit" className="link-moss">
+            See the AI readiness audit
+          </Link>
+          {" "}&mdash; we find the overshared folders first.
+        </p>
       </div>
     </section>
   );

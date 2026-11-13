@@ -16,6 +16,7 @@ const anchorLinks: { id: string; label: string }[] = [
 ];
 
 const routeLinks: { href: string; label: string }[] = [
+  { href: "/ai-readiness-audit", label: "AI readiness audit" },
   { href: "/case-studies", label: "Case studies" },
   { href: "/faq", label: "FAQ" },
 ];
